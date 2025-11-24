@@ -1,0 +1,96 @@
+import re
+import os
+import json
+import trafilatura
+import requests
+from flask import Blueprint, request, jsonify
+from playwright.sync_api import sync_playwright
+
+
+HF_TOKEN = os.getenv("HUGGING_FACE_API_TOKEN")
+HF_ENDPOINT = "https://router.huggingface.co/v1/chat/completions"
+
+DEFAULT_MODEL = "openai/gpt-oss-120b:novita"
+DEFAULT_PROMPT = "You are ToutCas, a helpful AI assistant integrated into a web browser application. Provide concise and relevant answers to user queries based on the context of web browsing. Always maintain a friendly and professional tone."
+
+
+text_analyzer_bp = Blueprint("text_analyzer", __name__)
+
+def extract_urls(text: str):
+    url_pattern = r'https?://[^\s]+' 
+    return re.findall(url_pattern, text)
+
+
+def fetch_html_with_playwright(url: str) -> str:
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto(url, timeout=80000)
+        html = page.content()
+        browser.close()
+        return html
+
+
+def extract_main_content(url: str) -> str:
+    try:
+        html = fetch_html_with_playwright(url)
+        content = trafilatura.extract(html)
+        return content if content else ""
+    except Exception as e:
+        return f"[Error extracting {url}: {e}]"
+
+
+def call_llm(prompt: str, model: str, messages: list[str]) -> str:
+    headers = {
+        "Authorization": f"Bearer {HF_TOKEN}",
+        "Content-Type": "application/json"
+    }  
+    messages.append({"role": "user", "content": prompt}) 
+    payload = {
+        "model": model,
+        "stream": False,
+        "messages": messages
+    } 
+    resp = requests.post(HF_ENDPOINT, headers=headers, data=json.dumps(payload))
+    resp.raise_for_status()
+    data = resp.json()
+    return data["choices"][0]["message"]["content"]
+
+
+@text_analyzer_bp.route("/text_analyzer", methods=["POST"])
+def run():
+    body = request.get_json() 
+    model_name = body.get("model", DEFAULT_MODEL) 
+    message_list = body.get("messages", [ {"role": "system", "content": DEFAULT_PROMPT} ])
+    user_text = body.get("text", "").strip()
+
+    # step 1: extract URLs
+    urls = extract_urls(user_text)  
+
+    # step 2: extract web main content for each URL
+    extracted_contents = []
+    for url in urls:
+        content = extract_main_content(url) 
+        extracted_contents.append({
+            "url": url,
+            "content": content[:5000]  # limit for safety
+        }) 
+
+    # step 3: construct prompt
+    final_prompt = ( 
+        f"{user_text}\n\n"
+        "Extracted webpage contents:\n\n"
+    ) 
+    for item in extracted_contents:
+        # final_prompt += f"=== URL: {item['url']} ===\n"
+        final_prompt += item["content"] + "\n\n" 
+    final_prompt += "Now analyze and respond to my request."
+
+    # step 4: call LLM
+    response = call_llm(final_prompt, model_name, message_list)
+
+    return jsonify({
+        "success": True, 
+        "llm_response": response
+    })
+

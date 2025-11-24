@@ -1,0 +1,28 @@
+{
+  "appname": "ToutCas",
+
+  "settings": "Paramètres",
+  "language": "Langue",
+  "appearance": "Apparence",
+  "general": "Général",
+  "about": "À propos",
+  "appName": "Nom de l'application",
+  "slogan": "Slogan",
+  "version": "Version",
+  "light": "Lumière",
+  "dark": "Sombre",
+
+  "newChat": "Nouveau chat",
+  "newTab": "Nouvel onglet",
+  "burn": "Se brûler",
+  "askToutCas": "Demandez à ToutCas",
+  "askToutCasOrEnterAURL": "Demandez à ToutCas ou saisissez une URL",
+ 
+  "model": "Modèle",
+  "askAnything": "Posez vos questions",
+  "attachFile": "Joindre un fichier",
+  "inUse": "En cours d'utilisation",
+  "aigreetings": "Bonjour ! Je suis ToutCas, comment puis-je vous aider aujourd'hui ?",
+  "aiprompt1": "Vous êtes ToutCas, un assistant IA utile intégré à une application de navigateur web. Fournissez des réponses concises et pertinentes aux questions des utilisateurs en fonction du contexte de navigation. Adoptez toujours un ton amical et professionnel."
+  
+}

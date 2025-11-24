@@ -1,0 +1,28 @@
+{
+  "appname": "ToutCas",
+
+  "settings": "设置",
+  "language": "语言",
+  "appearance": "外观",
+  "general": "常规",
+  "about": "关于",
+  "appName": "应用名称",
+  "slogan": "标语",
+  "version": "版本",
+  "light": "日间模式",
+  "dark": "夜间模式",
+
+  "newChat": "新建聊天",
+  "newTab": "新建标签页",
+  "burn": "即焚",
+  "askToutCas": "问问ToutCas",
+  "askToutCasOrEnterAURL": "问问ToutCas或输入一个网址",
+ 
+  "model": "模型",
+  "askAnything": "询问任何问题",  
+  "attachFile": "添加文件",
+  "inUse": "正在使用",
+  "aigreetings": "您好！我是 ToutCas，今天有什么可以帮到您的吗？",
+  "aiprompt1": "您是 ToutCas，一款集成在网页浏览器应用程序中的实用人工智能助手。根据网页浏览上下文，为用户查询提供简洁明了且相关的答案。始终保持友好专业的语气。"
+
+}

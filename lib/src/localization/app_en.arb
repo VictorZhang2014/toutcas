@@ -1,0 +1,28 @@
+{
+  "appname": "ToutCas",
+
+  "settings": "Settings",
+  "language": "Language",
+  "appearance": "Appearance",
+  "general": "General",
+  "about": "About",
+  "appName": "App Name",
+  "slogan": "Slogan",
+  "version": "Version",
+  "light": "Light",
+  "dark": "Dark",
+
+  "newChat": "New Chat",
+  "newTab": "New Tab",
+  "burn": "Burn",
+  "askToutCas": "Ask ToutCas",
+  "askToutCasOrEnterAURL": "Ask ToutCas or enter a URL",
+ 
+  "model": "Model",
+  "askAnything": "Ask anything",
+  "attachFile": "Attach File",
+  "inUse": "In Use",
+  "aigreetings": "Hi! I'm ToutCas, how can I assist you today?",
+  "aiprompt1": "You are ToutCas, a helpful AI assistant integrated into a web browser application. Provide concise and relevant answers to user queries based on the context of web browsing. Always maintain a friendly and professional tone."
+
+}
