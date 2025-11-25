@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:toutcas/src/models/web_tabdata.dart';
 import 'package:toutcas/src/utilities/url_util.dart';
 import 'package:toutcas/src/views/llm_chatview.dart';
 import 'package:toutcas/src/views/home_content_default_view.dart';
@@ -8,20 +9,6 @@ import 'package:toutcas/src/views/settings_view.dart';
 import 'package:toutcas/src/views/subviews/push_animation.dart';
 import 'package:toutcas/src/views/web_browser_view.dart';
 import 'package:toutcas/src/localization/app_localizations.dart';
-
-class WebTabData {  
-  int id;
-  String url = "";
-  String title = "New Tab";
-  String? logo = "";
-  Widget? pageInstance; // HomeContentDefaultView | WebBrowserView
-  bool pageHidden = false;
-  Widget? chatInstance;
-  bool canBack = false;
-  bool canForward = false;
-  WebTabData({required this.id, required this.url, required this.title});
-}
-
 
 class HomeView extends StatefulWidget {
   final Size windowSize;
@@ -93,6 +80,7 @@ class _HomeViewState extends State<HomeView> {
               webTabs[index].pageHidden = true; 
               webTabs[index].chatInstance = Container();
               webTabs[index].pageInstance = Container();
+              webTabs[index].htmlcode = ""; 
               selectedTabIndex = lastSelectedTabIndex; 
               int allHidden = webTabs.where((e) => e.pageHidden).length;
               if (allHidden == webTabs.length) {
@@ -135,7 +123,7 @@ class _HomeViewState extends State<HomeView> {
               setState(() {
                 _isHiddenAskToutCas = !_isHiddenAskToutCas;
               });  
-              webTabs[selectedTabIndex].chatInstance = _isHiddenAskToutCas ? null : LLMChatView(url: webTabs[sIndex].url); 
+              webTabs[selectedTabIndex].chatInstance = LLMChatView(data: webTabs[sIndex]); 
             },
           ),  
           Container(
@@ -269,7 +257,8 @@ class _HomeViewState extends State<HomeView> {
             webTabs[currentIndex].title = title;
             webTabs[currentIndex].logo = logoUrl;
           }); 
-        }, onPageCompleted: (url, canBack, canForward) {
+        }, onPageCompleted: (url, canBack, canForward, htmlcode) {
+          webTabs[currentIndex].htmlcode = htmlcode;
           setState(() {
             webTabs[currentIndex].url = url; 
           });
@@ -308,7 +297,8 @@ class _HomeViewState extends State<HomeView> {
               webTabs[currentIndex].title = title;
               webTabs[currentIndex].logo = logoUrl;
             });
-          }, onPageCompleted: (url, canBack, canForward) {
+          }, onPageCompleted: (url, canBack, canForward, htmlcode) {
+            webTabs[currentIndex].htmlcode = htmlcode;
             setState(() {
               webTabs[currentIndex].url = url;
               webTabs[currentIndex].canBack = canBack;
@@ -348,7 +338,8 @@ class _HomeViewState extends State<HomeView> {
             webTabs[currentIndex].title = title;
             webTabs[currentIndex].logo = logoUrl;
           }); 
-        }, onPageCompleted: (url, canBack, canForward) {
+        }, onPageCompleted: (url, canBack, canForward, htmlcode) {
+          webTabs[currentIndex].htmlcode = htmlcode;
           setState(() {
             webTabs[currentIndex].url = url;
             webTabs[currentIndex].canBack = canBack;

@@ -6,7 +6,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 class WebBrowserView extends StatefulWidget { 
   final String url;
   final Function(String title, String logoUrl) onTitleChanged;
-  final Function(String newUrl, bool canBack, bool canForward) onPageCompleted;
+  final Function(String newUrl, bool canBack, bool canForward, String htmlcode) onPageCompleted;
   final Function(String urlForNewWindow) onOpenWindow;
   WebBrowserView({
     required Key key, 
@@ -110,7 +110,8 @@ class _WebBrowserViewState extends State<WebBrowserView> {
   ) async {
     bool canBack = await widget.webViewController?.canGoBack() ?? false;
     bool canForward = await widget.webViewController?.canGoForward() ?? false;  
-    widget.onPageCompleted(url.toString(), canBack, canForward);
+    String htmlcode = await controller.getHtml() ?? "";
+    widget.onPageCompleted(url.toString(), canBack, canForward, htmlcode);
   }
 
   void _onProgressChanged(InAppWebViewController controller, int progress) {

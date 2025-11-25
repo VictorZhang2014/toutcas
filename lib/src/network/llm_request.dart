@@ -11,13 +11,14 @@ class LLMRequest extends LLMData {
  
   final Dio _dio = Dio();
 
-  Future<String> sendMessage(String userMessage) async {  
+  Future<String> sendMessage(String userMessage, String webContent) async {  
     try { 
       final body = {
         'messages': messages,
         'model': model,
         'stream': false,
         'text': userMessage,
+        'web_content': webContent,
       };  
       final response = await _dio.post(
         "$apiUrl/text_analyzer",
@@ -36,6 +37,35 @@ class LLMRequest extends LLMData {
         return assistantMessage ?? "";
       } else { 
         // throw Exception('Failed to get response: ${response.statusCode} - ${response.data}');
+      }
+    } catch (e) { 
+      if (e is DioException) {
+          debugPrint("DioError Response: ${e.response?.data}");
+      }  
+    } 
+    return "";
+  }
+
+  Future<String> getWebPageContent(String url, String htmlcode) async {  
+    try { 
+      final body = { 
+        'url': url,
+        'htmlcode': htmlcode,
+      };  
+      final response = await _dio.post(
+        "$apiUrl/webpage_content",
+        data: body,  
+        options: Options(
+          headers: { 
+            'Content-Type': 'application/json',
+          },
+        ),
+      );  
+      if (response.statusCode == 200) { 
+        final data = response.data;   
+        final content = data['content'];  
+        return content ?? "";
+      } else {  
       }
     } catch (e) { 
       if (e is DioException) {

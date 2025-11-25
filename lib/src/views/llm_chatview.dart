@@ -1,16 +1,19 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:file_picker/file_picker.dart'; 
 import 'package:toutcas/src/models/chat_message.dart';
 import 'package:toutcas/src/network/llm_request.dart'; 
-import 'package:toutcas/src/states/basic_config.dart';
+import 'package:toutcas/src/states/basic_config.dart'; 
 import 'package:toutcas/src/views/settings_view.dart';
 import 'package:toutcas/src/views/subviews/push_animation.dart';
 import 'package:toutcas/src/localization/app_localizations.dart';
+import 'package:gpt_markdown/gpt_markdown.dart';
+import 'package:toutcas/src/models/web_tabdata.dart';
 
-class LLMChatView extends StatefulWidget { 
-  final String url;
-  const LLMChatView({super.key, required this.url});
+class LLMChatView extends StatefulWidget {  
+  final WebTabData data;
+  const LLMChatView({super.key, required this.data});
 
   @override
   State<LLMChatView> createState() => _LLMChatViewState();
@@ -23,6 +26,8 @@ class _LLMChatViewState extends State<LLMChatView> {
   File? _selectedFile;
  
   late LLMRequest? llmRequest;
+  late bool isRequesting = false;
+  late Map<String, String> htmlContentCache = {};
 
   @override
   void initState() {
@@ -54,6 +59,11 @@ class _LLMChatViewState extends State<LLMChatView> {
     String currentUserQuery = _messageController.text.trim();
     if (currentUserQuery.isEmpty && _selectedFile == null) return;
 
+    if (isRequesting) return;
+    setState(() {
+      isRequesting = true; 
+    });
+
     setState(() {
       if (_selectedFile != null) {
         final extension = _selectedFile!.path.split('.').last.toLowerCase();
@@ -82,16 +92,21 @@ class _LLMChatViewState extends State<LLMChatView> {
       _messageController.clear();
     });
 
-    String query = currentUserQuery;
-    if (widget.url.isNotEmpty) {
-      query = "The current URL is ${widget.url}.\n$currentUserQuery"; 
-    } 
-    String? llmRespTxt = await llmRequest?.sendMessage(query);
+    String query = currentUserQuery; 
+    String webContent = "";
+    if (htmlContentCache[widget.data.url]?.isEmpty ?? true) {  
+      query = "${widget.data.url}.\n $currentUserQuery"; 
+      webContent = await llmRequest?.getWebPageContent(widget.data.url, widget.data.htmlcode) ?? ""; 
+      if (webContent.length > 5) {
+        htmlContentCache[widget.data.url] = webContent;
+      }
+    }
+    String? llmRespTxt = await llmRequest?.sendMessage(query, webContent);
     if (llmRespTxt != null && llmRespTxt.isNotEmpty) {
       setState(() {
         _messages.add(ChatMessage(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
-          content: llmRespTxt,
+          content: llmRespTxt.trim(),
           type: MessageType.text,
           isSentByMe: false,
           timestamp: DateTime.now(),
@@ -99,6 +114,9 @@ class _LLMChatViewState extends State<LLMChatView> {
       }); 
     } 
     _scrollToBottom();
+    setState(() {
+      isRequesting = false; 
+    });
   }
 
   void _scrollToBottom() {
@@ -330,16 +348,22 @@ class _LLMChatViewState extends State<LLMChatView> {
                   ),
                 if (message.content.isNotEmpty) ...[
                   if (message.type != MessageType.text) const SizedBox(height: 8),
-                  SelectableText(
+                  // SelectableText(
+                  //   message.content,
+                  //   style: TextStyle(color: textColor),
+                  //   selectionControls: MaterialTextSelectionControls(),
+                  //   cursorColor: textColor,
+                  //   toolbarOptions: const ToolbarOptions(
+                  //     copy: true,
+                  //     selectAll: true,
+                  //   ),
+                  // ), 
+                  GptMarkdown(
                     message.content,
-                    style: TextStyle(color: textColor),
-                    selectionControls: MaterialTextSelectionControls(),
-                    cursorColor: textColor,
-                    toolbarOptions: const ToolbarOptions(
-                      copy: true,
-                      selectAll: true,
+                    style: TextStyle(
+                      color: textColor
                     ),
-                  ),
+                  )
                 ], 
               ],
             ),
@@ -425,6 +449,8 @@ class _LLMChatViewState extends State<LLMChatView> {
             ),
           ),
           const SizedBox(width: 4),
+          isRequesting ?
+          (Platform.isMacOS || Platform.isIOS ? CupertinoActivityIndicator() : CircularProgressIndicator()):
           IconButton( 
             icon: const Icon(Icons.arrow_upward_rounded),
             constraints: BoxConstraints(),

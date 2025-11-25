@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:toutcas/src/views/home_view.dart';
+import 'package:flutter/material.dart'; 
+import 'package:toutcas/src/models/web_tabdata.dart';
 import 'package:toutcas/src/views/subviews/button_hover.dart';
 import 'package:toutcas/src/views/subviews/input_url_view.dart';
 import 'package:toutcas/src/localization/app_localizations.dart';
