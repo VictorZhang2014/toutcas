@@ -9,6 +9,7 @@ class WebTabData {
   Widget? pageInstance; // HomeContentDefaultView | WebBrowserView
   bool pageHidden = false;
   Widget? chatInstance;
+  bool isHiddenAskToutCas = true; 
   bool canBack = false;
   bool canForward = false;
   String htmlcode = "";

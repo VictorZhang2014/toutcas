@@ -32,7 +32,6 @@ class _HomeViewState extends State<HomeView> {
   LeftMenuConfig leftMenuConfig = LeftMenuConfig();
  
   Size currentSize = Size.zero;
-  bool _isHiddenAskToutCas = true; 
   
   double _leftWebWidthRatio = 0.8;   
   final double dividerWidth = 3;
@@ -59,10 +58,8 @@ class _HomeViewState extends State<HomeView> {
   
   @override
   Widget build(BuildContext context) {  
-    currentSize = MediaQuery.of(context).size;   
+    currentSize = MediaQuery.of(context).size;     
     double leftMenuWidth = _isLeftMenuOpened ? leftMenuConfig.maxWidth : leftMenuConfig.minWidth;
-    double leftWebWidth = currentSize.width * _leftWebWidthRatio;
-    if (_isHiddenAskToutCas) leftWebWidth = currentSize.width;    
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -118,12 +115,11 @@ class _HomeViewState extends State<HomeView> {
             onBack: () => handlePageStatus("back"),
             onForward: () => handlePageStatus("forward"),
             onRefresh: () => handlePageStatus("refresh"),
-            onChatWithToutCas: (bool enabled, int sIndex) {
-              // if (!enabled) return; // No retention of state when closing the chat
+            onChatWithToutCas: (bool enabled, int sIndex) { 
               setState(() {
-                _isHiddenAskToutCas = !_isHiddenAskToutCas;
+                webTabs[sIndex].isHiddenAskToutCas = !webTabs[sIndex].isHiddenAskToutCas;
               });  
-              webTabs[selectedTabIndex].chatInstance = LLMChatView(data: webTabs[sIndex]); 
+              webTabs[selectedTabIndex].chatInstance = enabled ? LLMChatView(data: webTabs[sIndex]) : null; 
             },
           ),  
           Container(
@@ -159,6 +155,8 @@ class _HomeViewState extends State<HomeView> {
                   child: IndexedStack(
                     index: selectedTabIndex,
                     children: webTabs.map((entry) {  
+                      double leftWebWidth = currentSize.width * _leftWebWidthRatio;
+                      if (entry.isHiddenAskToutCas) leftWebWidth = currentSize.width;  
                       return KeyedSubtree(
                         key: ValueKey(entry.pageInstance!.key),  
                         child: Visibility(
@@ -171,7 +169,7 @@ class _HomeViewState extends State<HomeView> {
                                   child: entry.pageInstance!,
                                 ),
                               ), 
-                              if (!_isHiddenAskToutCas)
+                              if (!entry.isHiddenAskToutCas)
                                 GestureDetector(
                                   behavior: HitTestBehavior.translucent, 
                                   onPanUpdate: (details) => _onPanUpdate(
@@ -186,10 +184,10 @@ class _HomeViewState extends State<HomeView> {
                                     ),
                                   ),
                                 ), 
-                              if (webTabs[selectedTabIndex].chatInstance != null) 
+                              if (entry.chatInstance != null) 
                                 SizedBox(
-                                  width: _isHiddenAskToutCas ? 0.5 : currentSize.width - leftWebWidth,
-                                  child: webTabs[selectedTabIndex].chatInstance!,
+                                  width: currentSize.width - leftWebWidth,
+                                  child: entry.chatInstance,
                                 ),
                             ],
                           ),

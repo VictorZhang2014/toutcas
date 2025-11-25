@@ -33,7 +33,7 @@ class _LLMChatViewState extends State<LLMChatView> {
   void initState() {
     super.initState();
     _setup();
-  }
+  } 
 
   void _setup() {
     final config = BasicConfig(); 
@@ -163,7 +163,7 @@ class _LLMChatViewState extends State<LLMChatView> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { 
     final settings = BasicConfig(); 
     return ListenableBuilder(
       listenable: settings,
