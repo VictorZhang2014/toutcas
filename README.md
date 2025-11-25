@@ -13,7 +13,8 @@ ToutCas is a French phrase called "En tout cas, ça fonctionne toujours". ToutCa
 
 
 # Screenshots
-![ToutCas Application Screenshot](https://github.com/VictorZhang2014/toutcas/blob/main/screenshots/Screenshot1.png)
+![ToutCas Application Screenshot1](https://github.com/VictorZhang2014/toutcas/blob/main/screenshots/Screenshot1.png)
+![ToutCas Application Screenshot2](https://github.com/VictorZhang2014/toutcas/blob/main/screenshots/Screenshot2.png)
 
 
 # Environment
@@ -43,8 +44,10 @@ ToutCas is a French phrase called "En tout cas, ça fonctionne toujours". ToutCa
     • Flutter extension version 3.122.0
 ```
 
+
 > [!TIP]
-> Use it as your own risk
+> Use it at your own risk
+
 
 # Citation
 @misc{VictorZhang2014ToutCas,\
