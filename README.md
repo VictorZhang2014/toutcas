@@ -2,6 +2,10 @@
 
 ToutCas is a French phrase called "En tout cas, ça fonctionne toujours". ToutCas is an AI assistant featured in Burn After Use, Never Data Persistence and Non-custodial Implementation. 
 
+[![made-for-macos](https://img.shields.io/badge/Made%20for-macOS-1f425f.svg)](https://developer.apple.com/)
+[![made-for-windows](https://img.shields.io/badge/Made%20for-windows-1f425f.svg)](https://developer.microsoft.com/en-us/windows/)
+[![made-for-linux](https://img.shields.io/badge/Made%20for-linux-1f425f.svg)](https://www.linuxfoundation.org/)
+
 # Features
 - ✅ Just like [`ChatGPT Atlas`](https://openai.com/index/introducing-chatgpt-atlas/), an AI personal web browser
 - ✅ Emphasizing `Burn-After-Use` and non-custodial for data persistence when interacting with the AI assistant
