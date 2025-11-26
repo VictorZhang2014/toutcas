@@ -110,7 +110,7 @@ class _WebBrowserViewState extends State<WebBrowserView> {
   ) async {
     bool canBack = await widget.webViewController?.canGoBack() ?? false;
     bool canForward = await widget.webViewController?.canGoForward() ?? false;  
-    String htmlcode = await controller.getHtml() ?? "";
+    String htmlcode = await controller.getHtml() ?? ""; 
     widget.onPageCompleted(url.toString(), canBack, canForward, htmlcode);
   }
 

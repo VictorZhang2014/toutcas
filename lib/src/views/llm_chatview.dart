@@ -24,6 +24,7 @@ class _LLMChatViewState extends State<LLMChatView> {
   final ScrollController _scrollController = ScrollController();
   final List<ChatMessage> _messages = [];
   File? _selectedFile;
+  late List<File> filePaths = [];
  
   late LLMRequest? llmRequest;
   late bool isRequesting = false;
@@ -64,22 +65,23 @@ class _LLMChatViewState extends State<LLMChatView> {
       isRequesting = true; 
     });
 
+    String? llmRespTxt;
     setState(() {
       if (_selectedFile != null) {
         final extension = _selectedFile!.path.split('.').last.toLowerCase();
         final isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp'].contains(extension);
-        
+        String filePath = _selectedFile!.path;
+        String fileName = filePath.split('/').last;
+        filePaths.add(_selectedFile!);
         _messages.add(ChatMessage(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           content: currentUserQuery,
           type: isImage ? MessageType.image : MessageType.document,
           isSentByMe: true,
           timestamp: DateTime.now(),
-          fileName: _selectedFile!.path.split('/').last,
-          filePath: _selectedFile!.path,
-        ));
-        
-        _selectedFile = null;
+          fileName:fileName,
+          filePath: filePath,
+        )); 
       } else {
         _messages.add(ChatMessage(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -101,12 +103,30 @@ class _LLMChatViewState extends State<LLMChatView> {
         htmlContentCache[widget.data.url] = webContent;
       }
     }
-    String? llmRespTxt = await llmRequest?.sendMessage(query, webContent);
+    if (_selectedFile != null || filePaths.isNotEmpty) {
+      String fileName = "";
+      String filePath = "";
+      bool isUploaded = false;
+      if (_selectedFile != null) {
+        filePath = _selectedFile!.path;
+        fileName = _selectedFile!.path.split('/').last; 
+      } else {
+        // todo 
+        // Current solution is to use the last selected file
+        // We support multiple file checkings in the future
+        filePath = filePaths.last.path;
+        fileName = filePaths.last.path.split('/').last;
+        isUploaded = true;
+      } 
+      llmRespTxt = await llmRequest?.sendPdfMessage(isUploaded, filePath, fileName, currentUserQuery, webContent); 
+    } else {
+      llmRespTxt = await llmRequest?.sendMessage(query, webContent);
+    }
     if (llmRespTxt != null && llmRespTxt.isNotEmpty) {
       setState(() {
         _messages.add(ChatMessage(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
-          content: llmRespTxt.trim(),
+          content: llmRespTxt?.trim() ?? "",
           type: MessageType.text,
           isSentByMe: false,
           timestamp: DateTime.now(),
@@ -115,6 +135,7 @@ class _LLMChatViewState extends State<LLMChatView> {
     } 
     _scrollToBottom();
     setState(() {
+      _selectedFile = null;
       isRequesting = false; 
     });
   }
@@ -124,7 +145,7 @@ class _LLMChatViewState extends State<LLMChatView> {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 600),
           curve: Curves.easeOut,
         );
       }

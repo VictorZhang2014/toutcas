@@ -21,7 +21,7 @@ class LLMRequest extends LLMData {
         'web_content': webContent,
       };  
       final response = await _dio.post(
-        "$apiUrl/text_analyzer",
+        "$apiUrl/text_analyser",
         data: body,  
         options: Options(
           headers: { 
@@ -66,6 +66,47 @@ class LLMRequest extends LLMData {
         final content = data['content'];  
         return content ?? "";
       } else {  
+      }
+    } catch (e) { 
+      if (e is DioException) {
+          debugPrint("DioError Response: ${e.response?.data}");
+      }  
+    } 
+    return "";
+  }
+
+  Future<String> sendPdfMessage(bool isUploaded, String filepath, String fileName, String userMessage, String webContent) async {  
+    try {  
+      FormData formData = FormData.fromMap({
+        'messages': messages,
+        'model': model,
+        'stream': false,
+        'text': userMessage,
+        'web_content': webContent,  
+        'file_name': fileName,
+      }); 
+      if (!isUploaded) {
+        // Attach file only if it's not already uploaded
+        formData.files.add(MapEntry(
+          'file',
+          await MultipartFile.fromFile(
+            filepath,
+            filename: fileName, 
+          )
+        ));
+      }
+      Response response = await _dio.post(
+        "$apiUrl/pdf_analyzer",
+        data: formData,  
+      );
+      if (response.statusCode == 200) { 
+        final data = response.data;  
+        addUserMessage(userMessage); 
+        final assistantMessage = data['llm_response']; 
+        addAssistantMessage(assistantMessage);
+        return assistantMessage ?? "";
+      } else { 
+        // throw Exception('Failed to get response: ${response.statusCode} - ${response.data}');
       }
     } catch (e) { 
       if (e is DioException) {
