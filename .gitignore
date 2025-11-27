@@ -47,4 +47,5 @@ app.*.map.json
 
 /server/.env
 /server/.venv
+/server/pdf
 /server/**/__pycache__
