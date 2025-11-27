@@ -104,11 +104,11 @@ class ChatLogo extends StatelessWidget {
   const ChatLogo({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Icon(
-      Icons.auto_awesome_mosaic_outlined,  
-      size: 48,
-      color: Colors.grey[300],
+  Widget build(BuildContext context) { 
+    return SizedBox(
+      width: 58,
+      height: 58,
+      child: const Image(image: AssetImage('assets/images/logo.png'))
     );
   }
 }

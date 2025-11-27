@@ -190,15 +190,15 @@ class _LLMChatViewState extends State<LLMChatView> {
     });
   }
 
-  String _getFileIcon(String extension) {
+  Icon _getFileIcon(String extension, double size) {
     switch (extension.toLowerCase()) {
       case 'pdf':
-        return '📄';
+        return Icon(Icons.picture_as_pdf_rounded, color: Colors.red, size: size);
       case 'doc':
       case 'docx':
-        return '📝';
+        return Icon(Icons.description_rounded, color: Colors.blue, size: size);
       default:
-        return '📎';
+        return Icon(Icons.document_scanner_rounded, color: Colors.green, size: size);
     }
   }
 
@@ -286,10 +286,7 @@ class _LLMChatViewState extends State<LLMChatView> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Center(
-                child: Text(
-                  _getFileIcon(extension),
-                  style: const TextStyle(fontSize: 32),
-                ),
+                child: _getFileIcon(extension, 32),
               ),
             ),
           const SizedBox(width: 12),
@@ -368,11 +365,8 @@ class _LLMChatViewState extends State<LLMChatView> {
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          _getFileIcon(message.fileName!.split('.').last),
-                          style: const TextStyle(fontSize: 24),
-                        ),
+                      children: [ 
+                        _getFileIcon(message.fileName!.split('.').last, 24),
                         const SizedBox(width: 8),
                         Flexible(
                           child: Text(
