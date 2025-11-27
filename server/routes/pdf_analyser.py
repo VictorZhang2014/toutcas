@@ -12,6 +12,7 @@ HF_ENDPOINT = "https://router.huggingface.co/v1/chat/completions"
 DEFAULT_MODEL = "openai/gpt-oss-120b:novita"
 DEFAULT_PROMPT = "You are ToutCas, a helpful AI assistant integrated into a web browser application. Provide concise and relevant answers to user queries based on the context of web browsing or file content (such as PDF). Always maintain a friendly and professional tone."
 
+DEFAULT_EMBEDDING_MODEL = "google/embeddinggemma-300m"
 
 pdf_analyzer_bp = Blueprint("pdf_analyzer", __name__)
 
@@ -37,7 +38,7 @@ def embed_text(text: str):
     ) 
     result = client.feature_extraction(
       text,
-      model="google/embeddinggemma-300m",
+      model=DEFAULT_EMBEDDING_MODEL,
     )  
     return result
 
@@ -73,6 +74,29 @@ def search(query, embeddings, top_k=3):
         scored.append((sim, item))
     scored.sort(reverse=True, key=lambda x: x[0])
     return [item["chunk"] for _, item in scored[:top_k]]
+
+def sentence_similarity_search(query: str, embeddings, top_k: int = 3):
+    client = InferenceClient(
+        provider="hf-inference",
+        api_key=HF_TOKEN,
+    ) 
+    sentences = [item["chunk"] for item in embeddings]
+    scores = client.sentence_similarity(
+        query, 
+        sentences,
+        model=DEFAULT_EMBEDDING_MODEL,
+    ) 
+    scored = sorted(
+        zip(scores, sentences),
+        key=lambda x: x[0],
+        reverse=True
+    )
+    return [text for _, text in scored[:top_k]]
+
+def search_with_sentence_similarity(query, embeddings, top_k=3):
+    sentences = [item["chunk"] for item in embeddings]
+    results = sentence_similarity_search(query, sentences, top_k)
+    return [x[1] for x in results]
 
 def load_embedding_chunks(pdf_dir: str, filename: str, file_entry_name: str):
     file_name = request.form.get(filename).strip()
@@ -121,10 +145,10 @@ def run():
 
     context = ""
     if embedding_chunks_web is not None:
-      docs = search(user_query, embedding_chunks_web)
+      docs = sentence_similarity_search(user_query, embedding_chunks_web)
       context = f"The web content is like `{docs}`\n\n"
     if embedding_chunks_useruploaded is not None:
-      docs = search(user_query, embedding_chunks_useruploaded)
+      docs = sentence_similarity_search(user_query, embedding_chunks_useruploaded)
       context += f"The user uploaded content is like `{docs}`\n\n"
     prompt = f"""
 Context:
