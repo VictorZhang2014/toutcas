@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/VictorZhang2014/toutcas/blob/main/screenshots/logo.png" width="170px" />
+<img src="https://github.com/VictorZhang2014/toutcas/blob/main/screenshots/app-logo.png" width="170px" />
 </p>
 
 # ToutCas
