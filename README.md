@@ -1,3 +1,5 @@
+<img src="https://github.com/VictorZhang2014/toutcas/blob/main/screenshots/logo.png" width="300px" />
+
 # ToutCas
 
 ToutCas is a French phrase called "En tout cas, ça fonctionne toujours". ToutCas is an AI assistant featured in Burn After Use, Never Data Persistence and Non-custodial Implementation. 
@@ -53,13 +55,14 @@ ToutCas is a French phrase called "En tout cas, ça fonctionne toujours". ToutCa
 > Use it at your own risk
 
 
+
+# Theme of the Thesis
+> Burn-After-Use for Preventing Data Leakage through a Secure Multi-Tenant Architecture in Enterprise LLM
+
 # Citation
 @misc{VictorZhang2014ToutCas,\
   title={ToutCas: AI Personal Browser featured in Burn-After-Use, Never Data Persistence, Non-custodial Implementation},\
   author={VictorZhang2014},\
   year={2025},\
 }
-
-
-
 
