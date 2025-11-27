@@ -1,4 +1,6 @@
-<img src="https://github.com/VictorZhang2014/toutcas/blob/main/screenshots/logo.png" width="300px" />
+<p align="center">
+<img src="https://github.com/VictorZhang2014/toutcas/blob/main/screenshots/logo.png" width="200px" />
+</p>
 
 # ToutCas
 
