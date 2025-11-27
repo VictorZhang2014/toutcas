@@ -21,12 +21,8 @@ def pdf_to_chunks(file_path, chunk_size=500):
     text = ""
     for page in pdf.pages:
         text += page.extract_text() + "\n"
-    
-    # 计算 token 数（示例使用 tiktoken）
     enc = get_encoding("cl100k_base")
     tokens = enc.encode(text)
-
-    # 拆分 chunks
     chunks = []
     for i in range(0, len(tokens), chunk_size):
         chunk_tokens = tokens[i:i+chunk_size]
@@ -56,8 +52,7 @@ def pdf_to_embeddings(file_path, out_file):
             "embedding": emb.tolist()
         }) 
     with open(out_file, "w", encoding="utf-8") as f:
-        json.dump(embeddings, f)
-    print(f"Saved {len(chunks)} embeddings to {out_file}")
+        json.dump(embeddings, f) 
     return embeddings
     
 
@@ -79,6 +74,20 @@ def search(query, embeddings, top_k=3):
     scored.sort(reverse=True, key=lambda x: x[0])
     return [item["chunk"] for _, item in scored[:top_k]]
 
+def load_embedding_chunks(pdf_dir: str, filename: str, file_entry_name: str):
+    file_name = request.form.get(filename).strip()
+    embeddings_path = os.path.join(pdf_dir, file_name + ".embeddings.json")
+    if (not os.path.exists(embeddings_path)):
+      file = request.files.get(file_entry_name)
+      if file is None or file.filename == "":
+          return None
+      save_path = os.path.join(pdf_dir, file.filename)
+      file.save(save_path) 
+      chunks = pdf_to_embeddings(save_path, embeddings_path)
+    else:
+      chunks = load_embeddings(embeddings_path)
+    return chunks
+
 def call_llm(prompt: str, model: str, messages: list[str]) -> str:
     headers = {
         "Authorization": f"Bearer {HF_TOKEN}",
@@ -89,40 +98,39 @@ def call_llm(prompt: str, model: str, messages: list[str]) -> str:
         "model": model,
         "stream": False,
         "messages": messages
-    } 
+    }  
     resp = requests.post(HF_ENDPOINT, headers=headers, data=json.dumps(payload))
     resp.raise_for_status()
     data = resp.json()
     return data["choices"][0]["message"]["content"]
+   
 
 @pdf_analyzer_bp.route("/pdf_analyzer", methods=["POST"])
 def run():  
-    pdf_dir = os.path.join(current_app.root_path, "pdf") 
-    os.makedirs(pdf_dir, exist_ok=True)
-    file_name = request.form.get("file_name").strip()
-    embeddings_path = os.path.join(pdf_dir, file_name + ".embeddings.json")
-    if (not os.path.exists(embeddings_path)):
-      file = request.files["file"]
-      if file.filename == "":
-        return jsonify({"success": False, "error": "No selected file"}), 400
-      save_path = os.path.join(pdf_dir, file.filename)
-      file.save(save_path)
-      
-      chunks = pdf_to_embeddings(save_path, embeddings_path)
-    else:
-      chunks = load_embeddings(embeddings_path)
-         
+    conversation_id = request.form.get("conversation_id")
     model_name = request.form.get("model", DEFAULT_MODEL) 
     user_query = request.form.get("text").strip()
-    message_list = request.form.get("messages", [ {"role": "system", "content": DEFAULT_PROMPT} ])
+    message_list = request.form.get("messages", [ {"role": "system", "content": DEFAULT_PROMPT} ]) 
+    pdf_dir = os.path.join(current_app.root_path, "pdf", conversation_id) 
+    os.makedirs(pdf_dir, exist_ok=True)
 
-    docs = search(user_query, chunks)
-    context = "\n\n".join(docs) 
+    # Web page as a pdf file
+    embedding_chunks_web = load_embedding_chunks(pdf_dir, "file_name_web", "file_web")  
+    # User uploaded pdf file
+    embedding_chunks_useruploaded = load_embedding_chunks(pdf_dir, "file_name_user_uploaded", "file_user_uploaded") 
+
+    context = ""
+    if embedding_chunks_web is not None:
+      docs = search(user_query, embedding_chunks_web)
+      context = f"The web content is like `{docs}`\n\n"
+    if embedding_chunks_useruploaded is not None:
+      docs = search(user_query, embedding_chunks_useruploaded)
+      context += f"The user uploaded content is like `{docs}`\n\n"
     prompt = f"""
 Context:
 {context}
 
-Question:
+The Question by the user's request:
 {user_query}
 
 Now analyze and respond to the user request:
