@@ -110,8 +110,12 @@ class _WebBrowserViewState extends State<WebBrowserView> {
   ) async {
     bool canBack = await widget.webViewController?.canGoBack() ?? false;
     bool canForward = await widget.webViewController?.canGoForward() ?? false;  
-    String htmlcode = await controller.getHtml() ?? ""; 
-    widget.onPageCompleted(url.toString(), canBack, canForward, htmlcode);
+    String htmlcode = await controller.getHtml() ?? "";   
+    widget.onPageCompleted(url.toString(), canBack, canForward, htmlcode);  
+    if (htmlcode.contains('<embed name="plugin" src="${widget.url}" type="application/pdf">')) { 
+      String? presetTitle = getPresetTitle("");  
+      widget.onTitleChanged.call(presetTitle ?? "", ""); 
+    }
   }
 
   void _onProgressChanged(InAppWebViewController controller, int progress) {
@@ -123,7 +127,8 @@ class _WebBrowserViewState extends State<WebBrowserView> {
   Future<void> _onTitleChanged(
     InAppWebViewController controller,
     String? title,
-  ) async {
+  ) async {  
+    title = getPresetTitle(title); 
     final js = r'''
       (function(){
         const links = Array.from(document.querySelectorAll('link[rel~="icon"],link[rel="shortcut icon"],link[rel="apple-touch-icon"]'));
@@ -156,6 +161,15 @@ class _WebBrowserViewState extends State<WebBrowserView> {
     String newUrl = createWindowAction.request.url.toString(); 
     widget.onOpenWindow.call(newUrl); 
     return true;
+  }
+
+  String? getPresetTitle(String? title) {
+    if (title == null || title.isEmpty) {
+      if (widget.url.startsWith("https://arxiv.org")) { 
+        title = "arXiv Paper ${widget.url.split("/").last}";
+      } 
+    }
+    return title;
   }
 
 }

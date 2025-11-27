@@ -21,3 +21,14 @@ class ChatMessage {
     this.filePath,
   });
 }
+
+
+class ChatPDFState {
+  bool isUploaded = false;
+  String fileName = "";
+  String pdfLocalPath = "";
+  String pdfRemotePath = ""; 
+  // User uploads or the web pdf viewer
+  bool isWebPdf = false; 
+}
+

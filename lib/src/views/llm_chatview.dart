@@ -3,8 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart'; 
 import 'package:toutcas/src/models/chat_message.dart';
+import 'package:toutcas/src/network/llm_data.dart';
 import 'package:toutcas/src/network/llm_request.dart'; 
-import 'package:toutcas/src/states/basic_config.dart'; 
+import 'package:toutcas/src/states/basic_config.dart';
+import 'package:toutcas/src/utilities/dateutil.dart';
+import 'package:toutcas/src/utilities/snackbar_view.dart'; 
 import 'package:toutcas/src/views/settings_view.dart';
 import 'package:toutcas/src/views/subviews/push_animation.dart';
 import 'package:toutcas/src/localization/app_localizations.dart';
@@ -23,12 +26,16 @@ class _LLMChatViewState extends State<LLMChatView> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<ChatMessage> _messages = [];
+  final conversationId = DateUtil.getFormattedDateNow();
+
   File? _selectedFile;
-  late List<File> filePaths = [];
+  late ChatPDFState selectedPdfState = ChatPDFState(); 
+  late ChatPDFState webPdfState = ChatPDFState();
+  late String htmlContentCache = "";
  
   late LLMRequest? llmRequest;
-  late bool isRequesting = false;
-  late Map<String, String> htmlContentCache = {};
+  late bool isLLMRequesting = false;
+  late String hintForLLMRequesting = "";
 
   @override
   void initState() {
@@ -60,9 +67,9 @@ class _LLMChatViewState extends State<LLMChatView> {
     String currentUserQuery = _messageController.text.trim();
     if (currentUserQuery.isEmpty && _selectedFile == null) return;
 
-    if (isRequesting) return;
+    if (isLLMRequesting) return;
     setState(() {
-      isRequesting = true; 
+      isLLMRequesting = true; 
     });
 
     String? llmRespTxt;
@@ -71,10 +78,11 @@ class _LLMChatViewState extends State<LLMChatView> {
         final extension = _selectedFile!.path.split('.').last.toLowerCase();
         final isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp'].contains(extension);
         String filePath = _selectedFile!.path;
-        String fileName = filePath.split('/').last;
-        filePaths.add(_selectedFile!);
+        String fileName = filePath.split('/').last;  
+        selectedPdfState.fileName = fileName;
+        selectedPdfState.pdfLocalPath = filePath; 
         _messages.add(ChatMessage(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          id: conversationId,
           content: currentUserQuery,
           type: isImage ? MessageType.image : MessageType.document,
           isSentByMe: true,
@@ -84,7 +92,7 @@ class _LLMChatViewState extends State<LLMChatView> {
         )); 
       } else {
         _messages.add(ChatMessage(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          id: conversationId,
           content: currentUserQuery,
           type: MessageType.text,
           isSentByMe: true,
@@ -93,35 +101,43 @@ class _LLMChatViewState extends State<LLMChatView> {
       } 
       _messageController.clear();
     });
+ 
+    stateUpdateFunc(String hint) {
+      setState(() {
+        hintForLLMRequesting = hint;
+      }); 
+    }
+    String query = currentUserQuery;  
 
-    String query = currentUserQuery; 
-    String webContent = "";
-    if (htmlContentCache[widget.data.url]?.isEmpty ?? true) {  
+    // 1. Get the web content excluded the html labels  
+    if (htmlContentCache.isEmpty && webPdfState.pdfLocalPath.isEmpty) {  
       query = "${widget.data.url}.\n $currentUserQuery"; 
-      webContent = await llmRequest?.getWebPageContent(widget.data.url, widget.data.htmlcode) ?? ""; 
-      if (webContent.length > 5) {
-        htmlContentCache[widget.data.url] = webContent;
+      LLMResponse? resp = await llmRequest?.getWebPageContent(widget.data.url, widget.data.htmlcode);  
+      final webContent = resp?.data['content'] as String;   
+      final isPdf = resp?.data['is_pdf'] as bool;
+      if (isPdf) {
+        // 2. If the current web is PDF viewer, then download the PDF first
+        final downloadedPdfPath = await LLMRequestDownloader(
+          model: BasicConfig().appAIModel).downloadPDF(
+            widget.data.url, 
+            (progress) => stateUpdateFunc("PDF analysis $progress%")
+        );  
+        webPdfState.fileName = downloadedPdfPath.split("/").last;
+        webPdfState.pdfLocalPath = downloadedPdfPath;
+        webPdfState.pdfRemotePath = widget.data.url;
+        webPdfState.isWebPdf = true; 
       }
+      htmlContentCache = webContent.trim();
     }
-    if (_selectedFile != null || filePaths.isNotEmpty) {
-      String fileName = "";
-      String filePath = "";
-      bool isUploaded = false;
-      if (_selectedFile != null) {
-        filePath = _selectedFile!.path;
-        fileName = _selectedFile!.path.split('/').last; 
-      } else {
-        // todo 
-        // Current solution is to use the last selected file
-        // We support multiple file checkings in the future
-        filePath = filePaths.last.path;
-        fileName = filePaths.last.path.split('/').last;
-        isUploaded = true;
-      } 
-      llmRespTxt = await llmRequest?.sendPdfMessage(isUploaded, filePath, fileName, currentUserQuery, webContent); 
+    // 3. Send PDF and user query to the LLM gateway
+    if (selectedPdfState.pdfLocalPath.isNotEmpty || webPdfState.pdfLocalPath.isNotEmpty) { 
+      stateUpdateFunc("PDF embedding processing ...");
+      llmRespTxt = await llmRequest?.chatWithFileMessage(conversationId, webPdfState, selectedPdfState, currentUserQuery, htmlContentCache); 
     } else {
-      llmRespTxt = await llmRequest?.sendMessage(query, webContent);
+      stateUpdateFunc("Web page analysis ...");
+      llmRespTxt = await llmRequest?.sendMessage(conversationId, query, htmlContentCache);
     }
+    // 4. Send only user query to the LLM gateway
     if (llmRespTxt != null && llmRespTxt.isNotEmpty) {
       setState(() {
         _messages.add(ChatMessage(
@@ -131,13 +147,16 @@ class _LLMChatViewState extends State<LLMChatView> {
           isSentByMe: false,
           timestamp: DateTime.now(),
         ));
-      }); 
-    } 
-    _scrollToBottom();
+      });
+      _scrollToBottom();
+    } else {
+      SnackbarView.error(context, "Ooops! Try again.");
+    }
+    stateUpdateFunc("");
     setState(() {
       _selectedFile = null;
-      isRequesting = false; 
-    });
+      isLLMRequesting = false; 
+    }); 
   }
 
   void _scrollToBottom() {
@@ -454,7 +473,7 @@ class _LLMChatViewState extends State<LLMChatView> {
             child: TextField(
               controller: _messageController,
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.askAnything,
+                hintText: isLLMRequesting ? hintForLLMRequesting : AppLocalizations.of(context)!.askAnything,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide.none,
@@ -466,11 +485,12 @@ class _LLMChatViewState extends State<LLMChatView> {
               onSubmitted: (_) => _sendMessage(),
               maxLines: null,
               textInputAction: TextInputAction.send,
-              style: TextStyle(fontSize: 14)
+              style: TextStyle(fontSize: 14),
+              readOnly: isLLMRequesting,
             ),
           ),
           const SizedBox(width: 4),
-          isRequesting ?
+          isLLMRequesting ?
           (Platform.isMacOS || Platform.isIOS ? CupertinoActivityIndicator() : CircularProgressIndicator()):
           IconButton( 
             icon: const Icon(Icons.arrow_upward_rounded),

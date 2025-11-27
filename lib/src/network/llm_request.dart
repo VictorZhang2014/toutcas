@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:toutcas/src/env.dart'; 
+import 'package:path_provider/path_provider.dart';
+import 'package:toutcas/src/env.dart';
+import 'package:toutcas/src/models/chat_message.dart'; 
 import 'llm_data.dart';
 
 class LLMRequest extends LLMData {
@@ -11,9 +15,10 @@ class LLMRequest extends LLMData {
  
   final Dio _dio = Dio();
 
-  Future<String> sendMessage(String userMessage, String webContent) async {  
+  Future<String> sendMessage(String conversationId, String userMessage, String webContent) async {  
     try { 
       final body = {
+        'conversation_id': conversationId,
         'messages': messages,
         'model': model,
         'stream': false,
@@ -46,7 +51,7 @@ class LLMRequest extends LLMData {
     return "";
   }
 
-  Future<String> getWebPageContent(String url, String htmlcode) async {  
+  Future<LLMResponse?> getWebPageContent(String url, String htmlcode) async {   
     try { 
       final body = { 
         'url': url,
@@ -60,46 +65,62 @@ class LLMRequest extends LLMData {
             'Content-Type': 'application/json',
           },
         ),
-      );  
-      if (response.statusCode == 200) { 
-        final data = response.data;   
-        final content = data['content'];  
-        return content ?? "";
-      } else {  
-      }
+      );   
+      if (response.statusCode == 200) {  
+        final success = response.data["success"] as bool;
+        final isPdf = response.data["is_pdf"] as bool;
+        final content = response.data["content"] as String;
+        var data = {"content": content, "is_pdf": isPdf};
+        return LLMResponse(success, "", data);
+      }   
     } catch (e) { 
       if (e is DioException) {
           debugPrint("DioError Response: ${e.response?.data}");
       }  
-    } 
-    return "";
+    }
+    return null;  
   }
 
-  Future<String> sendPdfMessage(bool isUploaded, String filepath, String fileName, String userMessage, String webContent) async {  
+  Future<String> chatWithFileMessage(String conversationId, ChatPDFState webPdfState, ChatPDFState selectedPdfState, String userMessage, String webContent) async {  
     try {  
       FormData formData = FormData.fromMap({
+        'conversation_id': conversationId,
         'messages': messages,
         'model': model,
         'stream': false,
         'text': userMessage,
-        'web_content': webContent,  
-        'file_name': fileName,
+        'web_content': webContent,   
+        'file_name_web': webPdfState.fileName,   
+        'file_name_user_uploaded': selectedPdfState.fileName,   
       }); 
-      if (!isUploaded) {
-        // Attach file only if it's not already uploaded
+      bool isUploaded1 = false, isUploaded2 = false;
+      if (!webPdfState.isUploaded && webPdfState.pdfLocalPath.isNotEmpty) { 
         formData.files.add(MapEntry(
-          'file',
+          'file_web',
           await MultipartFile.fromFile(
-            filepath,
-            filename: fileName, 
+            webPdfState.pdfLocalPath,
+            filename: webPdfState.fileName, 
           )
         ));
+        isUploaded1 = true;
+      }
+      if (!selectedPdfState.isUploaded && selectedPdfState.pdfLocalPath.isNotEmpty) { 
+        formData.files.add(MapEntry(
+          'file_user_uploaded',
+          await MultipartFile.fromFile(
+            selectedPdfState.pdfLocalPath,
+            filename: selectedPdfState.fileName, 
+          )
+        ));
+        isUploaded2 = true;
       }
       Response response = await _dio.post(
         "$apiUrl/pdf_analyzer",
         data: formData,  
       );
       if (response.statusCode == 200) { 
+        if (isUploaded1) webPdfState.isUploaded = true;
+        if (isUploaded2) selectedPdfState.isUploaded = true;
         final data = response.data;  
         addUserMessage(userMessage); 
         final assistantMessage = data['llm_response']; 
@@ -114,6 +135,48 @@ class LLMRequest extends LLMData {
       }  
     } 
     return "";
+  }
+
+}
+
+
+class LLMRequestDownloader extends LLMRequest {
+
+  LLMRequestDownloader({required super.model});
+
+  Future<String> get _localPath async {
+    final directory = await getTemporaryDirectory(); 
+    return directory.path;
+  }
+
+  Future<File> localFile(String fileUrl) async {
+    final path = await _localPath; 
+    final name = fileUrl.split('/').last;
+    if (name.endsWith(".pdf")) {
+      return File('$path/$name');
+    }
+    return File('$path/$name.pdf');
+  }
+
+  Future<String> downloadPDF(String fileUrl, Function(String p) progress) async {
+    final file = await localFile(fileUrl);
+    String savedTmpPath = file.path;  
+    try {
+      await _dio.download(
+        fileUrl,
+        savedTmpPath,
+        onReceiveProgress: (received, total) {
+          if (total != -1) {
+            double p = (received / total) * 100;
+            progress(p.toStringAsFixed(0)); 
+          }
+        },
+      );
+      return savedTmpPath;
+    } catch (e) {
+      debugPrint('downloadPDF error : $e');
+      return "";
+    } 
   }
 
 }

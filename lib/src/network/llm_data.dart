@@ -34,3 +34,20 @@ class LLMData {
   }
 
 }
+
+class LLMResponse {
+  final bool success;
+  final String message;
+  final Map<String, dynamic> data;
+  
+  LLMResponse(this.success, this.message, this.data);
+
+  static LLMResponse json(Map<String, String> dataMap) {
+    return LLMResponse(
+      dataMap["success"] as bool? ?? false,
+      dataMap["message"] as String,
+      dataMap["data"] as Map<String, String>? ?? {}
+    ); 
+  }
+
+}

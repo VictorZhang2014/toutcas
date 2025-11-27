@@ -21,7 +21,7 @@ void main() async {
       await windowManager.focus();
     });
   } 
-    ;
+
   runApp(ToutCasApp()); 
 }
 
