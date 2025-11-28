@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class WebTabData {  
   int id;
+  String conversationId = "";
   String url = "";
   String title = "New Tab";
   String? logo = "";

@@ -1,10 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:toutcas/src/models/IconTextModel.dart';
 import 'package:toutcas/src/localization/app_localizations.dart';
 
 class HomeContentDefaultView extends StatefulWidget {   
-  final Function(String searchText) onSearchText;
+  final Function(String searchText, String filepath) onSearchText;
   const HomeContentDefaultView({super.key, required this.onSearchText});
 
   @override
@@ -78,7 +79,7 @@ class _HomeContentDefaultViewState extends State<HomeContentDefaultView> {
                                         "${iconPairs[index].name} - ${iconPairs[index].url.replaceFirst(RegExp(r'^https?://'), '')}", 
                                         style: TextStyle(fontSize: 15, color: Colors.black.withAlpha(190)),
                                       ),
-                                      onTap: () => widget.onSearchText.call(iconPairs[index].url),
+                                      onTap: () => widget.onSearchText.call(iconPairs[index].url, ""),
                                     )
                                   ),
                                 );
@@ -115,7 +116,7 @@ class ChatLogo extends StatelessWidget {
 
 class ChatSearchField extends StatefulWidget {
   final Function(String keyword) onChangeKeyword;
-  final Function(String searchText) onSearchText;
+  final Function(String searchText, String filepath) onSearchText;
   const ChatSearchField({super.key, required this.onChangeKeyword, required this.onSearchText});
 
   @override
@@ -128,6 +129,7 @@ class ChatSearchFieldState extends State<ChatSearchField> {
   late TextEditingController _controller;
   late FocusNode _focusNode;
   late String keyword = "";
+  late String selectedFilePath = "";
 
   @override
   void initState() { 
@@ -156,11 +158,38 @@ class ChatSearchFieldState extends State<ChatSearchField> {
               hintText: AppLocalizations.of(context)!.askToutCasOrEnterAURL,
               hintStyle: TextStyle(color: Colors.grey),
               prefixIcon: const Icon(Icons.search_rounded, size: 20, color: Colors.grey),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.add_circle_outline_rounded, size: 20, color: Colors.grey),
+              suffixIcon: selectedFilePath.isNotEmpty ?
+              IconButton(
+                icon: Icon(Icons.picture_as_pdf_rounded, color: Colors.red, size: 35),
                 onPressed: () { 
+                  setState(() {
+                    selectedFilePath = "";
+                  });
                 },
-              ),
+              )
+              : PopupMenuButton<String>( 
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                offset: const Offset(0, -70),  
+                tooltip: AppLocalizations.of(context)!.attachFile, 
+                onSelected: (value) => _pickFile(value),  
+                child: Container( 
+                  margin: EdgeInsets.only(left: 2),
+                  child: const Icon(Icons.add_circle_outline_rounded, size: 20, color: Colors.grey),
+                ), 
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[ 
+                  const PopupMenuItem<String>(
+                    value: 'pdf',
+                    child: ListTile(
+                      leading: Icon(Icons.picture_as_pdf, color: Colors.red),
+                      title: Text('PDF'),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ), 
+                ],
+              ), 
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(25.0), 
               ),
@@ -191,8 +220,24 @@ class ChatSearchFieldState extends State<ChatSearchField> {
   }
 
   void handleSearchSubmitted(String value) {  
-    widget.onSearchText.call(value); 
+    widget.onSearchText.call(value, selectedFilePath); 
+    setState(() {
+      _controller.text = "";
+      selectedFilePath = "";
+    });
   }
+
+  Future<void> _pickFile(String ext) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom, 
+      allowedExtensions: [ext],
+    ); 
+    if (result != null) {
+      setState(() {
+        selectedFilePath = result.files.single.path!;
+      });
+    }
+  } 
 
 }
  

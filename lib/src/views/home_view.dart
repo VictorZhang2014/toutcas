@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:toutcas/src/models/web_tabdata.dart';
+import 'package:toutcas/src/utilities/dateutil.dart';
 import 'package:toutcas/src/utilities/url_util.dart';
 import 'package:toutcas/src/views/llm_chatview.dart';
 import 'package:toutcas/src/views/home_content_default_view.dart';
@@ -253,7 +254,9 @@ class _HomeViewState extends State<HomeView> {
 
   void createNewTab({String newWindowWithUrl = ""}) {  
     autoid++;
+    final conversationId = DateUtil.getFormattedDateNow();
     webTabs.add(WebTabData(id: autoid, url: "", title: "New Tab"));
+    webTabs.last.conversationId = conversationId;
     if (newWindowWithUrl.isNotEmpty && newWindowWithUrl.length > 5) { 
       int currentIndex = webTabs.length - 1; 
       webTabs.last.pageInstance = WebBrowserView(
@@ -280,41 +283,58 @@ class _HomeViewState extends State<HomeView> {
     }   
     webTabs.last.pageInstance = HomeContentDefaultView( 
       key: ValueKey(autoid),
-      onSearchText: (searchText) { 
+      onSearchText: (String searchText, String filepath) { 
         int currentIndex = selectedTabIndex;  
         String searchKeyword = searchText.trim();   
         if (searchKeyword.isEmpty) {
           return;
-        }   
-        if (!UrlUtil.isLikelyUrl(searchKeyword)) {
-          // todo , only chat with ToutCas
-          return;
-        }
-        String nUrl = UrlUtil.getURLWithHttps(searchKeyword); 
+        }     
+        String nUrl = ""; 
+        List<String> possibleUrls = UrlUtil.extractUrls(searchKeyword);
+        if (possibleUrls.isNotEmpty) { 
+          nUrl = UrlUtil.addHttpsToUrl(possibleUrls.first);
+        } 
         setState(() {
           webTabs[currentIndex].url = nUrl; 
           webTabs[currentIndex].title = "Untitled";
         }); 
         autoid++; 
-        webTabs[currentIndex].pageInstance = WebBrowserView( 
-          key: ValueKey(autoid),
-          url: webTabs[currentIndex].url, 
-          onTitleChanged: (title, logoUrl) {
-            setState(() {
-              webTabs[currentIndex].title = title;
-              webTabs[currentIndex].logo = logoUrl;
-            });
-          }, onPageCompleted: (url, canBack, canForward, htmlcode) {
-            webTabs[currentIndex].htmlcode = htmlcode;
-            setState(() {
-              webTabs[currentIndex].url = url;
-              webTabs[currentIndex].canBack = canBack;
-              webTabs[currentIndex].canForward = canForward;
-            });
-          }, onOpenWindow: (urlForNewWindow) {
-            createNewTab(newWindowWithUrl: urlForNewWindow);
-          }
-        );  
+        if (nUrl.length > 5) { 
+          webTabs[currentIndex].pageInstance = WebBrowserView( 
+            key: ValueKey(autoid),
+            url: webTabs[currentIndex].url, 
+            onTitleChanged: (title, logoUrl) {
+              setState(() {
+                webTabs[currentIndex].title = title;
+                webTabs[currentIndex].logo = logoUrl;
+              });
+            }, onPageCompleted: (url, canBack, canForward, htmlcode) {
+              webTabs[currentIndex].htmlcode = htmlcode;
+              setState(() {
+                webTabs[currentIndex].url = url;
+                webTabs[currentIndex].canBack = canBack;
+                webTabs[currentIndex].canForward = canForward;
+              });
+            }, onOpenWindow: (urlForNewWindow) {
+              createNewTab(newWindowWithUrl: urlForNewWindow);
+            }
+          ); 
+        } else { 
+          webTabs[selectedTabIndex].isHiddenAskToutCas = false; 
+          webTabs[selectedTabIndex].chatInstance =  
+            LLMChatView(
+              userQuery: searchKeyword,
+              userUploadedFilepath: filepath,
+              data: webTabs[currentIndex], 
+              onTerminateChat: () {
+                setState(() {
+                  webTabs[currentIndex].isHiddenAskToutCas = true;
+                  webTabs[currentIndex].chatInstance = null;
+                });   
+              },
+            );
+          setState(() {}); 
+        }
       }
     );  
   }

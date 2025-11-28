@@ -7,7 +7,6 @@ import 'package:toutcas/src/models/chat_message.dart';
 import 'package:toutcas/src/network/llm_data.dart';
 import 'package:toutcas/src/network/llm_request.dart'; 
 import 'package:toutcas/src/states/basic_config.dart';
-import 'package:toutcas/src/utilities/dateutil.dart';
 import 'package:toutcas/src/utilities/snackbar_view.dart'; 
 import 'package:toutcas/src/views/settings_view.dart';
 import 'package:toutcas/src/views/subviews/push_animation.dart';
@@ -16,9 +15,11 @@ import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:toutcas/src/models/web_tabdata.dart';
 
 class LLMChatView extends StatefulWidget {  
+  final String? userQuery;
+  final String? userUploadedFilepath;
   final WebTabData data;
   final VoidCallback onTerminateChat;
-  const LLMChatView({super.key, required this.data, required this.onTerminateChat});
+  const LLMChatView({super.key, this.userQuery, this.userUploadedFilepath, required this.data, required this.onTerminateChat});
 
   @override
   State<LLMChatView> createState() => _LLMChatViewState();
@@ -27,8 +28,7 @@ class LLMChatView extends StatefulWidget {
 class _LLMChatViewState extends State<LLMChatView> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  final List<ChatMessage> _messages = [];
-  final conversationId = DateUtil.getFormattedDateNow();
+  final List<ChatMessage> _messages = []; 
 
   File? _selectedFile;
   late ChatPDFState selectedPdfState = ChatPDFState(); 
@@ -41,7 +41,7 @@ class _LLMChatViewState extends State<LLMChatView> {
 
   @override
   void initState() {
-    super.initState();
+    super.initState(); 
     _setup();
   } 
 
@@ -61,11 +61,18 @@ class _LLMChatViewState extends State<LLMChatView> {
           isSentByMe: false,
           timestamp: DateTime.now(),
         ));
-      });
+      }); 
+      if (widget.userQuery != null && widget.userQuery!.isNotEmpty) {
+        _messageController.text = widget.userQuery!;
+        if (widget.userUploadedFilepath != null && widget.userUploadedFilepath!.isNotEmpty) {
+          _selectedFile = File(widget.userUploadedFilepath!);
+        }
+        _sendMessage(); 
+      }
     });
   }
 
-  void _sendMessage() async {
+  void _sendMessage() async { 
     String currentUserQuery = _messageController.text.trim();
     if (currentUserQuery.isEmpty && _selectedFile == null) return;
 
@@ -84,7 +91,7 @@ class _LLMChatViewState extends State<LLMChatView> {
         selectedPdfState.fileName = fileName;
         selectedPdfState.pdfLocalPath = filePath; 
         _messages.add(ChatMessage(
-          id: conversationId,
+          id: widget.data.conversationId,
           content: currentUserQuery,
           type: isImage ? MessageType.image : MessageType.document,
           isSentByMe: true,
@@ -94,7 +101,7 @@ class _LLMChatViewState extends State<LLMChatView> {
         )); 
       } else {
         _messages.add(ChatMessage(
-          id: conversationId,
+          id: widget.data.conversationId,
           content: currentUserQuery,
           type: MessageType.text,
           isSentByMe: true,
@@ -112,7 +119,7 @@ class _LLMChatViewState extends State<LLMChatView> {
     String query = currentUserQuery;  
 
     // 1. Get the web content excluded the html labels  
-    if (htmlContentCache.isEmpty && webPdfState.pdfLocalPath.isEmpty) {  
+    if (widget.userQuery == null && htmlContentCache.isEmpty && webPdfState.pdfLocalPath.isEmpty) {  
       query = "${widget.data.url}.\n $currentUserQuery"; 
       LLMResponse? resp = await llmRequest?.getWebPageContent(widget.data.url, widget.data.htmlcode);  
       final webContent = resp?.data['content'] as String;   
@@ -134,10 +141,10 @@ class _LLMChatViewState extends State<LLMChatView> {
     // 3. Send PDF and user query to the LLM gateway
     if (selectedPdfState.pdfLocalPath.isNotEmpty || webPdfState.pdfLocalPath.isNotEmpty) { 
       stateUpdateFunc("PDF embedding processing ...");
-      llmRespTxt = await llmRequest?.chatWithFileMessage(conversationId, webPdfState, selectedPdfState, currentUserQuery, htmlContentCache); 
+      llmRespTxt = await llmRequest?.chatWithFileMessage(widget.data.conversationId, webPdfState, selectedPdfState, currentUserQuery, htmlContentCache); 
     } else {
       stateUpdateFunc("Web page analysis ...");
-      llmRespTxt = await llmRequest?.sendMessage(conversationId, query, htmlContentCache);
+      llmRespTxt = await llmRequest?.sendMessage(widget.data.conversationId, query, htmlContentCache);
     }
     // 4. Send only user query to the LLM gateway
     if (llmRespTxt != null && llmRespTxt.isNotEmpty) {
