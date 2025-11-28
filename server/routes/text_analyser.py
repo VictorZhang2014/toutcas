@@ -4,13 +4,9 @@ import json
 import requests
 from flask import Blueprint, request, jsonify
 
+from constants import DEFAULT_INFERENCE_MODEL, DEFAULT_PROMPT, LLM_ENDPOINT
 
 HF_TOKEN = os.getenv("HUGGING_FACE_API_TOKEN")
-HF_ENDPOINT = "https://router.huggingface.co/v1/chat/completions"
-
-DEFAULT_MODEL = "openai/gpt-oss-120b:novita"
-DEFAULT_PROMPT = "You are ToutCas, a helpful AI assistant integrated into a web browser application. Provide concise and relevant answers to user queries based on the context of web browsing. Always maintain a friendly and professional tone."
-
 
 text_analyser_bp = Blueprint("text_analyser", __name__)
 
@@ -29,7 +25,7 @@ def call_llm(prompt: str, model: str, messages: list[str]) -> str:
         "stream": False,
         "messages": messages
     } 
-    resp = requests.post(HF_ENDPOINT, headers=headers, data=json.dumps(payload))
+    resp = requests.post(LLM_ENDPOINT, headers=headers, data=json.dumps(payload))
     resp.raise_for_status()
     data = resp.json()
     return data["choices"][0]["message"]["content"]
@@ -38,7 +34,7 @@ def call_llm(prompt: str, model: str, messages: list[str]) -> str:
 @text_analyser_bp.route("/text_analyser", methods=["POST"])
 def run():
     body = request.get_json() 
-    model_name = body.get("model", DEFAULT_MODEL) 
+    model_name = body.get("model", DEFAULT_INFERENCE_MODEL) 
     message_list = body.get("messages", [ {"role": "system", "content": DEFAULT_PROMPT} ])
     user_text = body.get("text", "").strip()
     web_content = body.get("web_content", "").strip()

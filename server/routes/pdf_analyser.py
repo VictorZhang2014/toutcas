@@ -6,13 +6,9 @@ import numpy as np
 import PyPDF2
 from tiktoken import get_encoding
 
+from constants import DEFAULT_EMBEDDING_MODEL, DEFAULT_INFERENCE_MODEL, DEFAULT_PROMPT, LLM_ENDPOINT
+
 HF_TOKEN = os.getenv("HUGGING_FACE_API_TOKEN") 
-HF_ENDPOINT = "https://router.huggingface.co/v1/chat/completions"
-
-DEFAULT_MODEL = "openai/gpt-oss-120b:novita"
-DEFAULT_PROMPT = "You are ToutCas, a helpful AI assistant integrated into a web browser application. Provide concise and relevant answers to user queries based on the context of web browsing or file content (such as PDF). Always maintain a friendly and professional tone."
-
-DEFAULT_EMBEDDING_MODEL = "google/embeddinggemma-300m"
 
 pdf_analyzer_bp = Blueprint("pdf_analyzer", __name__)
 
@@ -123,7 +119,7 @@ def call_llm(prompt: str, model: str, messages: list[str]) -> str:
         "stream": False,
         "messages": messages
     }  
-    resp = requests.post(HF_ENDPOINT, headers=headers, data=json.dumps(payload))
+    resp = requests.post(LLM_ENDPOINT, headers=headers, data=json.dumps(payload))
     resp.raise_for_status()
     data = resp.json()
     return data["choices"][0]["message"]["content"]
@@ -132,7 +128,7 @@ def call_llm(prompt: str, model: str, messages: list[str]) -> str:
 @pdf_analyzer_bp.route("/pdf_analyzer", methods=["POST"])
 def run():  
     conversation_id = request.form.get("conversation_id")
-    model_name = request.form.get("model", DEFAULT_MODEL) 
+    model_name = request.form.get("model", DEFAULT_INFERENCE_MODEL) 
     user_query = request.form.get("text").strip()
     message_list = request.form.get("messages", [ {"role": "system", "content": DEFAULT_PROMPT} ]) 
     pdf_dir = os.path.join(current_app.root_path, "pdf", conversation_id) 

@@ -4,10 +4,9 @@ import requests
 import json 
 from flask import Blueprint, request, jsonify
 
-HF_TOKEN = os.getenv("HUGGING_FACE_API_TOKEN")
+from constants import DEFAULT_INFERENCE_MODEL, LLM_ENDPOINT
 
-DEFAULT_MODEL = "openai/gpt-oss-120b:novita"
-HF_ENDPOINT = "https://router.huggingface.co/v1/chat/completions"
+HF_TOKEN = os.getenv("HUGGING_FACE_API_TOKEN") 
 
 webpage_content_bp = Blueprint("webpage_content", __name__)
 
@@ -26,11 +25,11 @@ def check_if_pdf_only(htmlcode: str) -> str:
     messages = [ {"role": "system", "content": "You are a PDF finder expert in the HTML sourcecode. Answer only one word: YES or NO."} ]
     messages.append({"role": "user", "content": f"Is the following HTML sourcecode mainly to show a PDF? `{htmlcode}`"}) 
     payload = {
-        "model": DEFAULT_MODEL,
+        "model": DEFAULT_INFERENCE_MODEL,
         "stream": False,
         "messages": messages
     }  
-    resp = requests.post(HF_ENDPOINT, headers=headers, data=json.dumps(payload))
+    resp = requests.post(LLM_ENDPOINT, headers=headers, data=json.dumps(payload))
     resp.raise_for_status()
     data = resp.json()
     return data["choices"][0]["message"]["content"]
