@@ -118,8 +118,17 @@ class _HomeViewState extends State<HomeView> {
             onChatWithToutCas: (bool enabled, int sIndex) { 
               setState(() {
                 webTabs[sIndex].isHiddenAskToutCas = !webTabs[sIndex].isHiddenAskToutCas;
-              });  
-              webTabs[selectedTabIndex].chatInstance = enabled ? LLMChatView(data: webTabs[sIndex]) : null; 
+              });   
+              webTabs[selectedTabIndex].chatInstance = 
+                enabled ? 
+                LLMChatView(data: webTabs[sIndex], onTerminateChat: () {
+                    setState(() {
+                      webTabs[sIndex].isHiddenAskToutCas = true;
+                      webTabs[sIndex].chatInstance = null;
+                    });   
+                  },
+                ) 
+                : null; 
             },
           ),  
           Container(

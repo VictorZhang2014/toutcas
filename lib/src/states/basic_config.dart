@@ -18,6 +18,7 @@ class BasicConfig extends ChangeNotifier {
     appLanguageCode = prefs.getString("appLanguageCode") ?? 'en'; 
 
     appAIModel = prefs.getString("appAIModel") ?? appAIModel; 
+    burnedSeconds = prefs.getInt("burnedSeconds") ?? burnedSeconds; 
   }
 
   String appTheme = 'Light'; 
@@ -60,6 +61,14 @@ class BasicConfig extends ChangeNotifier {
     final SharedPreferences prefs = await SharedPreferences.getInstance(); 
     appAIModel = model; 
     await prefs.setString("appAIModel", appAIModel);
+    notifyListeners();
+  }
+
+  int burnedSeconds = 30; // 30 minutes
+  void changeBurnedSeconds(int s) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance(); 
+    burnedSeconds = s; 
+    await prefs.setInt("burnedSeconds", burnedSeconds);
     notifyListeners();
   }
 

@@ -195,6 +195,7 @@ class SettingsForGeneralPanel extends StatefulWidget {
 class _SettingsForGeneralPanelState extends State<SettingsForGeneralPanel> {
 
   final List<String> appearanceList = ['System', 'Light', 'Dark'];  
+  final List<int> burnedSecondsList = [30, 60, 120];  
 
   @override
   void initState() { 
@@ -249,6 +250,26 @@ class _SettingsForGeneralPanelState extends State<SettingsForGeneralPanel> {
                   labelStyle: TextStyle(fontSize: 18, color: Colors.black),
                 ), 
                 isExpanded: true,  
+              ), 
+              SizedBox(height: 30),
+              DropdownButtonFormField<String>( 
+                initialValue: "${settings.burnedSeconds}",  
+                onChanged: (String? newValue) { 
+                  final s = int.parse(newValue ?? "30"); 
+                  settings.changeBurnedSeconds(s);
+                }, 
+                items: burnedSecondsList
+                    .map<DropdownMenuItem<String>>((int value) {
+                  return DropdownMenuItem<String>(
+                    value: value.toString(),
+                    child: Text("$value minutes", style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal)),
+                  );
+                }).toList(), 
+                decoration: InputDecoration(
+                  labelText: "Seconds for Burn-After-Use",  
+                  labelStyle: TextStyle(fontSize: 18, color: Colors.black),
+                ),
+                isExpanded: true,   
               ), 
             ],
           ),

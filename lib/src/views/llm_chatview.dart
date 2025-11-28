@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,8 @@ import 'package:toutcas/src/models/web_tabdata.dart';
 
 class LLMChatView extends StatefulWidget {  
   final WebTabData data;
-  const LLMChatView({super.key, required this.data});
+  final VoidCallback onTerminateChat;
+  const LLMChatView({super.key, required this.data, required this.onTerminateChat});
 
   @override
   State<LLMChatView> createState() => _LLMChatViewState();
@@ -225,7 +227,13 @@ class _LLMChatViewState extends State<LLMChatView> {
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Text(settings.appAIModel, style: TextStyle(color: Colors.grey[500], fontSize: 12),), 
-                          Text("• ${AppLocalizations.of(context)?.inUse}", style: TextStyle(color: Colors.green, fontSize: 10),),
+                          Wrap(
+                            children: [
+                              Text("• ${AppLocalizations.of(context)?.inUse}", style: TextStyle(color: Colors.green, fontSize: 10),),
+                              SizedBox(width: 20),
+                              ChatTimerSubview(presetSeconds: settings.burnedSeconds * 60, onTerminateTimer: () => widget.onTerminateChat()),
+                            ],
+                          ),
                         ],
                       ), 
                     ),
@@ -505,5 +513,82 @@ class _LLMChatViewState extends State<LLMChatView> {
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+}
+
+class ChatTimerSubview extends StatefulWidget {
+  final int presetSeconds;
+  final VoidCallback onTerminateTimer;
+  const ChatTimerSubview({super.key, required this.presetSeconds, required this.onTerminateTimer});
+
+  @override
+  State<ChatTimerSubview> createState() => _ChatTimerSubviewState();
+}
+
+class _ChatTimerSubviewState extends State<ChatTimerSubview> { 
+  int _secondsLeft = 30 * 60; // 30 minutes by default
+  bool _isRunning = false;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _secondsLeft = widget.presetSeconds;
+    _startTimer();
+  }
+ 
+  String _formatTime(int totalSeconds) {
+    final int minutes = (totalSeconds ~/ 60);
+    final int seconds = (totalSeconds % 60); 
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  void _startTimer() {
+    if (_isRunning || _secondsLeft == 0) return;  
+    setState(() {
+      _isRunning = true;
+    }); 
+    _timer = Timer.periodic(
+      const Duration(seconds: 1),
+      (Timer timer) {
+        if (_secondsLeft > 0) { 
+          setState(() {
+            _secondsLeft--;
+          });
+        } else {
+          _stopTimer();
+          widget.onTerminateTimer();
+        }
+      },
+    );
+  } 
+
+  void _stopTimer() {
+    if (_timer != null) {
+      _timer!.cancel();
+    } 
+    setState(() {
+      _isRunning = false;
+    });
+  } 
+ 
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose(); 
+  }
+ 
+  @override
+  Widget build(BuildContext context) { 
+    return Center(
+      child: Text(
+        _formatTime(_secondsLeft),
+        style: TextStyle(
+          fontSize: 10, 
+          fontFeatures: const [FontFeature.tabularFigures()],  
+          color: Colors.red.shade700,
+        ),
+      ),
+    ); 
   }
 }
