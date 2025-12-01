@@ -137,6 +137,32 @@ class LLMRequest extends LLMData {
     return "";
   }
 
+  Future<LLMResponse?> burnConversation(String conversationId) async {   
+    try { 
+      final body = { 
+        'conversation_id': conversationId
+      };  
+      final response = await _dio.post(
+        "$apiUrl/burn_after_use",
+        data: body,  
+        options: Options(
+          headers: { 
+            'Content-Type': 'application/json',
+          },
+        ),
+      );   
+      if (response.statusCode == 200) {  
+        final success = response.data["success"] as bool;
+        return LLMResponse(success, "", {});
+      }   
+    } catch (e) { 
+      if (e is DioException) {
+          debugPrint("DioError Response: ${e.response?.data}");
+      }  
+    }
+    return null;  
+  }
+
 }
 
 
@@ -180,3 +206,4 @@ class LLMRequestDownloader extends LLMRequest {
   }
 
 }
+
