@@ -141,10 +141,10 @@ def run():
 
     context = ""
     if embedding_chunks_web is not None:
-      docs = sentence_similarity_search(user_query, embedding_chunks_web)
+      docs = search(user_query, embedding_chunks_web)
       context = f"The web content is like `{docs}`\n\n"
     if embedding_chunks_useruploaded is not None:
-      docs = sentence_similarity_search(user_query, embedding_chunks_useruploaded)
+      docs = search(user_query, embedding_chunks_useruploaded)
       context += f"The user uploaded content is like `{docs}`\n\n"
     prompt = f"""
 Context:
