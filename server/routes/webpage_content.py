@@ -39,8 +39,9 @@ def run():
     body = request.get_json()  
     url = body.get("url")  
     htmlcode = body.get("htmlcode").strip() 
-    respConfirm = check_if_pdf_only(htmlcode)   
-    if (respConfirm == "YES"):
+    # respConfirm = check_if_pdf_only(htmlcode)  # Consumes too many tokens
+    isPDFViewer = '<embed name="plugin" src="'+url+'" type="application/pdf">' in htmlcode
+    if (isPDFViewer):
         return jsonify({
             "success": True,   
             "is_pdf": True,

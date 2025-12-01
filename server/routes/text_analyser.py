@@ -1,4 +1,3 @@
-import re
 import os
 import json
 import requests
@@ -9,10 +8,6 @@ from constants import DEFAULT_INFERENCE_MODEL, DEFAULT_PROMPT, LLM_ENDPOINT
 HF_TOKEN = os.getenv("HUGGING_FACE_API_TOKEN")
 
 text_analyser_bp = Blueprint("text_analyser", __name__)
-
-def extract_urls(text: str):
-    url_pattern = r'https?://[^\s]+' 
-    return re.findall(url_pattern, text)
 
 def call_llm(prompt: str, model: str, messages: list[str]) -> str:
     headers = {
@@ -62,6 +57,10 @@ def run():
 
 # import trafilatura
 # from playwright.sync_api import sync_playwright
+
+# def extract_urls(text: str):
+#     url_pattern = r'https?://[^\s]+' 
+#     return re.findall(url_pattern, text)
 
 # def fetch_html_with_playwright(url: str) -> str:
 #     with sync_playwright() as p:
