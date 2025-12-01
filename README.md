@@ -22,7 +22,7 @@ ToutCas is a French phrase called "En tout cas, ça fonctionne toujours". ToutCa
 
 # Screenshots
 ![ToutCas Application Screenshot1](https://github.com/VictorZhang2014/toutcas/blob/main/screenshots/Screenshot1.png)
-![ToutCas Application Screenshot2](https://github.com/VictorZhang2014/toutcas/blob/main/screenshots/Screenshot2.png)
+![ToutCas Application Screenshot3](https://github.com/VictorZhang2014/toutcas/blob/main/screenshots/Screenshot3.png)
 
 
 # Environment
@@ -59,6 +59,7 @@ ToutCas is a French phrase called "En tout cas, ça fonctionne toujours". ToutCa
 
 
 # Theme of the Thesis
+> [!TIP]
 > Burn-After-Use for Preventing Data Leakage through a Secure Multi-Tenant Architecture in Enterprise LLM
 
 # Citation

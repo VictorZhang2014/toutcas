@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:toutcas/src/models/web_tabdata.dart';
+import 'package:toutcas/src/network/llm_request.dart';
+import 'package:toutcas/src/states/basic_config.dart';
 import 'package:toutcas/src/utilities/dateutil.dart';
 import 'package:toutcas/src/utilities/url_util.dart';
 import 'package:toutcas/src/views/llm_chatview.dart';
@@ -119,17 +121,18 @@ class _HomeViewState extends State<HomeView> {
             onChatWithToutCas: (bool enabled, int sIndex) { 
               setState(() {
                 webTabs[sIndex].isHiddenAskToutCas = !webTabs[sIndex].isHiddenAskToutCas;
-              });   
-              webTabs[selectedTabIndex].chatInstance = 
-                enabled ? 
-                LLMChatView(data: webTabs[sIndex], onTerminateChat: () {
-                    setState(() {
-                      webTabs[sIndex].isHiddenAskToutCas = true;
-                      webTabs[sIndex].chatInstance = null;
-                    });   
+              });  
+              if (enabled) {
+                webTabs[selectedTabIndex].chatInstance = LLMChatView(
+                  data: webTabs[sIndex], 
+                  onTerminateChat: () {
+                    burnChatConversation(sIndex);
                   },
-                ) 
-                : null; 
+                );
+              } else {
+                burnChatConversation(sIndex); 
+              }
+              setState(() {});  
             },
           ),  
           Container(
@@ -288,17 +291,21 @@ class _HomeViewState extends State<HomeView> {
         String searchKeyword = searchText.trim();   
         if (searchKeyword.isEmpty) {
           return;
-        }     
+        }      
         String nUrl = ""; 
-        List<String> possibleUrls = UrlUtil.extractUrls(searchKeyword);
-        if (possibleUrls.isNotEmpty) { 
-          nUrl = UrlUtil.addHttpsToUrl(possibleUrls.first);
-        } 
+        if (UrlUtil.isLikelyUrl(searchKeyword)) {
+          nUrl = searchKeyword; 
+        } else {
+          List<String> possibleUrls = UrlUtil.extractUrls(searchKeyword);
+          if (possibleUrls.isNotEmpty) { 
+            nUrl = UrlUtil.addHttpsToUrl(possibleUrls.first);
+          }  
+        }
         setState(() {
           webTabs[currentIndex].url = nUrl; 
           webTabs[currentIndex].title = "Untitled";
         }); 
-        autoid++; 
+        autoid++;  
         if (nUrl.length > 5) { 
           webTabs[currentIndex].pageInstance = WebBrowserView( 
             key: ValueKey(autoid),
@@ -327,10 +334,7 @@ class _HomeViewState extends State<HomeView> {
               userUploadedFilepath: filepath,
               data: webTabs[currentIndex], 
               onTerminateChat: () {
-                setState(() {
-                  webTabs[currentIndex].isHiddenAskToutCas = true;
-                  webTabs[currentIndex].chatInstance = null;
-                });   
+                burnChatConversation(currentIndex);  
               },
             );
           setState(() {}); 
@@ -402,6 +406,14 @@ class _HomeViewState extends State<HomeView> {
       return AppLocalizations.of(context)?.settings ?? "Settings";
     }
     return t; 
+  }
+
+  void burnChatConversation(int i) {
+    setState(() {
+      webTabs[i].isHiddenAskToutCas = true;
+      webTabs[i].chatInstance = null;
+    }); 
+    LLMRequest(model: BasicConfig().appAIModel).burnConversation(webTabs[i].conversationId);
   }
 
 }
