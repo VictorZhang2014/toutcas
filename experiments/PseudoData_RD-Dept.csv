@@ -1,0 +1,31 @@
+Name,Age,Phone,Hire Date,Salary,Position,Performance,"Years in Company",Specialization
+Dr. Evelyn Chen,38,+1-650-123-4567,2018-03-15,"$185,000",Senior Research Scientist,A,5.8,AI/ML
+Dr. Marcus Schmidt,45,+49-171-2345678,2015-07-22,"€135,000",Lead Researcher,A,8.5,Quantum Computing
+Dr. Ananya Sharma,32,+91-98765-12345,2020-09-10,"₹2,800,000",Data Scientist,A,3.3,Big Data Analytics
+Prof. Kenji Yamamoto,52,+81-90-9876-5432,2012-11-05,"¥15,000,000",Research Director,A,11.2,Robotics
+Dr. Isabella Rossi,36,+39-333-4567890,2019-01-30,"€110,000",Biotech Researcher,B,5,Biotechnology
+Dr. Benjamin Park,41,+82-10-5555-6666,2017-06-18,"₩95,000,000",Senior Engineer,A,6.6,Nanotechnology
+Dr. Fatima Al-Rashid,34,+971-50-777-8888,2020-03-22,"AED 450,000",Research Scientist,B,3.8,Renewable Energy
+Dr. Lucas Müller,29,+49-152-3456789,2021-08-14,"€85,000",Junior Researcher,B,2.4,Computer Vision
+Dr. Sofia Zhang,37,+86-139-1234-5678,2018-11-09,"¥320,000",AI Researcher,A,5.1,Deep Learning
+Dr. Alexander Volkov,43,+7-916-999-8888,2016-04-25,"₽5,500,000",Senior Physicist,A,7.8,Material Science
+Dr. Chloe Dubois,31,+33-6-23456789,2020-12-03,"€92,000",Biochemist,B,3.1,Drug Discovery
+Dr. Raj Patel,39,+1-408-987-6543,2019-07-19,"$165,000",Principal Scientist,A,4.5,Genomics
+Dr. Yuki Tanaka,35,+81-80-1234-5678,2019-09-28,"¥11,500,000",Robotics Engineer,A,4.3,Autonomous Systems
+Dr. Miguel Silva,40,+55-11-5555-1234,2017-02-14,"R$280,000",Research Lead,B,6.9,Environmental Science
+Dr. Emma Johansson,33,+46-70-123-4567,2020-05-11,"SEK 850,000",Data Analyst,B,3.7,Bioinformatics
+Dr. Chen Wei,44,+86-138-8888-9999,2016-08-30,"¥350,000",Senior Researcher,A,7.4,Quantum Physics
+Dr. Hans Bauer,47,+49-163-4567890,2014-12-01,"€145,000",Technical Director,A,9.1,Aerospace
+Dr. Maria Gonzalez,30,+52-55-9876-5432,2021-02-22,"MXN 850,000",Research Associate,C,2.9,Medical Devices
+Dr. Thomas Andersen,42,+45-20-123456,2018-10-17,"DKK 950,000",Senior Analyst,B,5.2,Climate Science
+Dr. Li Wang,38,+86-136-5555-6666,2019-04-08,"¥310,000",ML Engineer,A,4.8,Natural Language Processing
+Dr. Pierre Martin,36,+33-7-34567890,2020-01-15,"€98,000",Research Scientist,B,3.9,Neuroscience
+Dr. Sarah Kim,31,+82-10-7777-8888,2021-06-30,"₩78,000,000",Junior Scientist,B,2.6,Wearable Tech
+Dr. Viktor Ivanov,46,+7-915-444-5555,2015-09-12,"₽6,200,000",Lead Engineer,A,8.3,Nuclear Engineering
+Dr. Anna Kowalski,34,+48-600-987-654,2020-07-25,"PLN 240,000",Researcher,B,3.5,Computer Science
+Dr. David Lee,41,+65-8123-4567,2017-11-08,"SGD 180,000",Senior Data Scientist,A,6.1,Predictive Analytics
+Dr. Fatoumata Diallo,37,+221-77-555-6666,2019-03-14,"XOF 22,000,000",Research Manager,B,4.8,Agricultural Tech
+Dr. Samir Hassan,33,+20-100-777-8888,2021-01-10,"EGP 420,000",Research Scientist,C,3,Water Purification
+Dr. Elena Moretti,39,+39-347-1234567,2018-06-05,"€115,000",Senior Researcher,A,5.6,Photonics
+Dr. James Wilson,50,+44-7911-987654,2013-05-18,"£125,000",Chief Scientist,A,10.7,Theoretical Physics
+Dr. Zhang Li,42,+86-137-9999-8888,2016-12-20,"¥380,000",Director of R&D,A,7.1,Advanced Materials
