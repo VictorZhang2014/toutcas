@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:toutcas/src/models/web_tabdata.dart';
 import 'package:toutcas/src/network/llm_request.dart';
@@ -408,11 +409,27 @@ class _HomeViewState extends State<HomeView> {
     return t; 
   }
 
-  void burnChatConversation(int i) {
+  void burnChatConversation(int i) async {
     setState(() {
       webTabs[i].isHiddenAskToutCas = true;
       webTabs[i].chatInstance = null;
-    }); 
+    });  
+    
+    // APPENDIX B: Test Case 1 - Local Cache Deletion Failure Under Software Crash
+    List<String> localPaths = webTabs[i].chatPDFLocalPaths;
+    for (int j = 0; j < localPaths.length; j++) {
+      try {
+        File f = File(localPaths[j]);
+        if (await f.exists()) {
+          await f.delete();
+        }  
+      } catch (e) { 
+        debugPrint("Deletion failure at path ${localPaths[i]}");
+      } 
+    }
+    webTabs[i].chatPDFLocalPaths = [];
+
+    // APPENDIX B: Test Case 2 - Remote Cache Persistence Under Network Failure
     LLMRequest(model: BasicConfig().appAIModel).burnConversation(webTabs[i].conversationId);
   }
 

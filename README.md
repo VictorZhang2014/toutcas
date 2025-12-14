@@ -9,6 +9,7 @@ ToutCas is a French phrase called "En tout cas, ça fonctionne toujours". ToutCa
 [![made-for-macos](https://img.shields.io/badge/Made%20for-macOS-1f425f.svg)](https://developer.apple.com/)
 [![made-for-windows](https://img.shields.io/badge/Made%20for-windows-1f425f.svg)](https://developer.microsoft.com/en-us/windows/)
 [![made-for-linux](https://img.shields.io/badge/Made%20for-linux-1f425f.svg)](https://www.linuxfoundation.org/)
+[![DeepSeek-V3](https://img.shields.io/badge/🤖%20Chat-DeepSeek%20V3-536af5?color=536af5&logoColor=white)](https://chat.deepseek.com/)
 
 # Features
 - ✅ Just like [`ChatGPT Atlas`](https://openai.com/index/introducing-chatgpt-atlas/), an AI personal web browser
@@ -18,6 +19,7 @@ ToutCas is a French phrase called "En tout cas, ça fonctionne toujours". ToutCa
 - ✅ In support of [gpt-oss-120b](https://huggingface.co/openai/gpt-oss-120b), [DeepSeek V3.2 Exp](https://huggingface.co/deepseek-ai/DeepSeek-V3.2-Exp), [Mistral-7B-Instruct-v0.2](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.2) 
 - ✅ Analyzing the web page directly, PDF analysis with RAG + Embedding
 - ✅ Inspired by this dissertation, referring to arxiv.org/xx.xxx
+
 
 
 # Screenshots

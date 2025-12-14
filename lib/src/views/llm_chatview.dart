@@ -135,12 +135,14 @@ class _LLMChatViewState extends State<LLMChatView> {
         webPdfState.pdfLocalPath = downloadedPdfPath;
         webPdfState.pdfRemotePath = widget.data.url;
         webPdfState.isWebPdf = true; 
+        widget.data.chatPDFLocalPaths.add(webPdfState.pdfLocalPath);
       }
       htmlContentCache = webContent.trim();
     }
     // 3. Send PDF and user query to the LLM gateway
     if (selectedPdfState.pdfLocalPath.isNotEmpty || webPdfState.pdfLocalPath.isNotEmpty) { 
       stateUpdateFunc("PDF embedding processing ...");
+      widget.data.chatPDFLocalPaths.add(selectedPdfState.pdfLocalPath);
       llmRespTxt = await llmRequest?.chatWithFileMessage(widget.data.conversationId, webPdfState, selectedPdfState, currentUserQuery, htmlContentCache); 
     } else {
       stateUpdateFunc("Web page analysis ...");
