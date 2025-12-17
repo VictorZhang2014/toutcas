@@ -7,8 +7,8 @@
 ToutCas is a French phrase called "En tout cas, ça marche toujours". ToutCas is an AI assistant featured in Burn After Use, Never Data Persistence and Non-custodial Implementation. 
 
 [![built-for-macos](https://img.shields.io/badge/Built%20for-macOS-BF0BD9.svg)](https://developer.apple.com/)
-[![built-for-windows](https://img.shields.io/badge/Built%20for-windows-236FFC.svg)](https://developer.microsoft.com/en-us/windows/)
-[![built-for-linux](https://img.shields.io/badge/Built%20for-linux-000000.svg)](https://www.linuxfoundation.org/)
+[![built-for-windows](https://img.shields.io/badge/Built%20for-Windows-236FFC.svg)](https://developer.microsoft.com/en-us/windows/)
+[![built-for-linux](https://img.shields.io/badge/Built%20for-Linux-000000.svg)](https://www.linuxfoundation.org/)
 [![GPT-OSS-120B](https://img.shields.io/badge/%F0%9F%A4%96%20Chat-GPTOSS%20120b-2800B3)](https://chat.openai.com)
 [![DeepSeek-V3](https://img.shields.io/badge/🤖%20Chat-DeepSeek%20V3-536af5?color=536af5)](https://chat.deepseek.com/)
 [![Mistral-7B-v0.2](https://img.shields.io/badge/%F0%9F%98%BA%20Le%20Chat-Mistral7B%20v0.2-EB8721)](https://chat.mistral.ai/chat)
