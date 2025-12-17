@@ -4,12 +4,15 @@
 
 # ToutCas
 
-ToutCas is a French phrase called "En tout cas, ça fonctionne toujours". ToutCas is an AI assistant featured in Burn After Use, Never Data Persistence and Non-custodial Implementation. 
+ToutCas is a French phrase called "En tout cas, ça marche toujours". ToutCas is an AI assistant featured in Burn After Use, Never Data Persistence and Non-custodial Implementation. 
 
-[![made-for-macos](https://img.shields.io/badge/Made%20for-macOS-1f425f.svg)](https://developer.apple.com/)
-[![made-for-windows](https://img.shields.io/badge/Made%20for-windows-1f425f.svg)](https://developer.microsoft.com/en-us/windows/)
-[![made-for-linux](https://img.shields.io/badge/Made%20for-linux-1f425f.svg)](https://www.linuxfoundation.org/)
-[![DeepSeek-V3](https://img.shields.io/badge/🤖%20Chat-DeepSeek%20V3-536af5?color=536af5&logoColor=white)](https://chat.deepseek.com/)
+[![built-for-macos](https://img.shields.io/badge/Built%20for-macOS-BF0BD9.svg)](https://developer.apple.com/)
+[![built-for-windows](https://img.shields.io/badge/Built%20for-windows-236FFC.svg)](https://developer.microsoft.com/en-us/windows/)
+[![built-for-linux](https://img.shields.io/badge/Built%20for-linux-000000.svg)](https://www.linuxfoundation.org/)
+[![GPT-OSS-120B](https://img.shields.io/badge/%F0%9F%A4%96%20Chat-GPTOSS%20120b-2800B3)](https://chat.openai.com)
+[![DeepSeek-V3](https://img.shields.io/badge/🤖%20Chat-DeepSeek%20V3-536af5?color=536af5)](https://chat.deepseek.com/)
+[![Mistral-7B-v0.2](https://img.shields.io/badge/%F0%9F%98%BA%20Le%20Chat-Mistral7B%20v0.2-EB8721)](https://chat.mistral.ai/chat)
+
 
 # Features
 - ✅ Just like [`ChatGPT Atlas`](https://openai.com/index/introducing-chatgpt-atlas/), an AI personal web browser
@@ -52,6 +55,16 @@ ToutCas is a French phrase called "En tout cas, ça fonctionne toujours". ToutCa
 [✓] VS Code (version 1.106.2)
     • VS Code at /Applications/Visual Studio Code.app/Contents
     • Flutter extension version 3.122.0
+```
+Python Flask
+```
+[✓] Python (version 3.9.6)
+[✓] Flask (version 3.1.2)
+[✓] transformers (version 4.57.3)
+[✓] torch (version 2.9.1)
+[✓] tokenizers (version 0.22.1)
+[✓] scikit-learn (version 1.8.0)
+[✓] numpy (version 2.3.5)
 ```
 
 
