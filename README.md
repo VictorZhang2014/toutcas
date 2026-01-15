@@ -3,7 +3,8 @@
 </p>
 
 # ToutCas
-ToutCas takes its name from the French phrase "En tout cas, ça marche toujours".
+Nothing stored. Nothing shared. A Burn-After-Use AI assistant.
+
 It is an AI assistant designed with a Burn-After-Use interaction model and, zero remote data persistence, and a secure multi-tenant architecture, ensuring that user data is never stored or retained on remote servers.
 
 [![built-for-macos](https://img.shields.io/badge/Built%20for-macOS-BF0BD9.svg)](https://developer.apple.com/)
