@@ -30,6 +30,20 @@ It is an AI assistant designed with a Burn-After-Use interaction model and, zero
 
 
 # Environment
+Python + AI
+```
+[✓] Python (version 3.9.6)
+[✓] Flask (version 3.1.2)
+[✓] transformers (version 4.57.3)
+[✓] torch (version 2.9.1)
+[✓] tokenizers (version 0.22.1)
+[✓] scikit-learn (version 1.8.0)
+[✓] numpy (version 2.3.5)
+[✓] huggingface-hub (version 0.36.0)
+[✓] scipy (version 1.16.3)
+[✓] sentence-transformers (version 5.2.0)
+```
+Client side
 ```
 [✓] Flutter (Channel stable, macOS 15.6.1 24G90)
     • Flutter version 3.35.1
@@ -54,16 +68,6 @@ It is an AI assistant designed with a Burn-After-Use interaction model and, zero
 [✓] VS Code (version 1.106.2)
     • VS Code at /Applications/Visual Studio Code.app/Contents
     • Flutter extension version 3.122.0
-```
-Python Flask
-```
-[✓] Python (version 3.9.6)
-[✓] Flask (version 3.1.2)
-[✓] transformers (version 4.57.3)
-[✓] torch (version 2.9.1)
-[✓] tokenizers (version 0.22.1)
-[✓] scikit-learn (version 1.8.0)
-[✓] numpy (version 2.3.5)
 ```
 
 
