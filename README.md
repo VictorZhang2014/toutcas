@@ -3,8 +3,8 @@
 </p>
 
 # ToutCas
-
-ToutCas is a French phrase called "En tout cas, ça marche toujours". ToutCas is an AI assistant featured in Burn After Use, Never Data Persistence and Non-custodial Implementation. 
+ToutCas takes its name from the French phrase "En tout cas, ça marche toujours".
+It is an AI assistant designed with a Burn-After-Use interaction model and, zero remote data persistence, and a secure multi-tenant architecture, ensuring that user data is never stored or retained on remote servers.
 
 [![built-for-macos](https://img.shields.io/badge/Built%20for-macOS-BF0BD9.svg)](https://developer.apple.com/)
 [![built-for-windows](https://img.shields.io/badge/Built%20for-Windows-236FFC.svg)](https://developer.microsoft.com/en-us/windows/)
@@ -15,14 +15,12 @@ ToutCas is a French phrase called "En tout cas, ça marche toujours". ToutCas is
 
 
 # Features
-- ✅ Just like [`ChatGPT Atlas`](https://openai.com/index/introducing-chatgpt-atlas/), an AI personal web browser
-- ✅ Emphasizing `Burn-After-Use` and non-custodial for data persistence when interacting with the AI assistant
-- ✅ First version finished in `3 Days`, continually improvement
-- ✅ Support macOS, Windows, Linux, the version of iOS and Android is under development
-- ✅ In support of [gpt-oss-120b](https://huggingface.co/openai/gpt-oss-120b), [DeepSeek V3.2 Exp](https://huggingface.co/deepseek-ai/DeepSeek-V3.2-Exp), [Mistral-7B-Instruct-v0.2](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.2) 
-- ✅ Analyzing the web page directly, PDF analysis with RAG + Embedding
-- ✅ Inspired by this dissertation, referring to arxiv.org/xx.xxx
-
+- ✅ An agentic AI web browser, inspired by [`ChatGPT Atlas`](https://openai.com/index/introducing-chatgpt-atlas/)
+- ✅ Burn-After-Use (BAU) mechanism with a non-custodial design, ensuring no persistent storage of user data during AI interactions
+- ✅ Cross-platform support: macOS, Windows, and Linux, (iOS and Android versions are under development)
+- ✅ Built-in support for multiple LLMs, including [gpt-oss-120b](https://huggingface.co/openai/gpt-oss-120b), [DeepSeek V3.2 Exp](https://huggingface.co/deepseek-ai/DeepSeek-V3.2-Exp), and [Mistral-7B-Instruct-v0.2](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.2) 
+- ✅ Native web page analysis and PDF understanding powered by Retrieval-Augmented Generation (RAG) and embedding-based retrieval
+- ✅ Research-inspired design, informed by this dissertation [arXiv:2601.06627](https://arxiv.org/abs/2601.06627)
 
 
 # Screenshots
@@ -72,15 +70,20 @@ Python Flask
 > Use it at your own risk
 
 
-
 # Theme of the Thesis
 > [!TIP]
 > Burn-After-Use for Preventing Data Leakage through a Secure Multi-Tenant Architecture in Enterprise LLM
 
-# Citation
-@misc{VictorZhang2014ToutCas,\
-  title={ToutCas: AI Personal Browser featured in Burn-After-Use, Never Data Persistence, Non-custodial Implementation},\
-  author={VictorZhang2014},\
-  year={2025},\
-}
 
+## Citation
+If you use **ToutCas** in your research or academic work, please cite:
+
+```bibtex
+@misc{ToutCas2025,
+  title        = {ToutCas: An AI Personal Browser with a Burn-After-Use Interaction Model and Non-Custodial Data Handling},
+  author       = {Zhang, Victor},
+  year         = {2025},
+  howpublished = {\url{https://github.com/VictorZhang2014/toutcas}},
+  note         = {arXiv:2601.06627}
+}
+```
