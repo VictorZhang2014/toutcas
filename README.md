@@ -23,6 +23,9 @@ It is an AI assistant designed with a Burn-After-Use interaction model and, zero
 - ✅ Native web page analysis and PDF understanding powered by Retrieval-Augmented Generation (RAG) and embedding-based retrieval
 - ✅ Research-inspired design, informed by this dissertation [arXiv:2601.06627](https://arxiv.org/abs/2601.06627)
 
+# SMTA Architecture & Burn-After-Use Mechanism
+![ToutCas Application Screenshot1](https://github.com/VictorZhang2014/toutcas/blob/main/screenshots/smta-architecture.png)
+![ToutCas Application Screenshot3](https://github.com/VictorZhang2014/toutcas/blob/main/screenshots/burn-after-use-mechanism.png)
 
 # Screenshots
 ![ToutCas Application Screenshot1](https://github.com/VictorZhang2014/toutcas/blob/main/screenshots/Screenshot1.png)
