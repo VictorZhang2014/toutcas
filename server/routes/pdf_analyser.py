@@ -34,7 +34,7 @@ def embed_text(text: str):
     ) 
     result = client.feature_extraction(
       text,
-      model=DEFAULT_EMBEDDING_MODEL,
+      model="sentence-transformers/all-MiniLM-L6-v2",
     )  
     return result
 
@@ -138,10 +138,6 @@ def run():
     embedding_chunks_web = load_embedding_chunks(pdf_dir, "file_name_web", "file_web")  
     # User uploaded pdf file
     embedding_chunks_useruploaded = load_embedding_chunks(pdf_dir, "file_name_user_uploaded", "file_user_uploaded") 
-
-    # Attack Test 2: Log-Pipeline Leakage Across Tenants
-    current_app.logger.info("===========embedding_chunks_useruploaded==========>>>")
-    current_app.logger.info(embedding_chunks_useruploaded)
 
     context = ""
     if embedding_chunks_web is not None:
