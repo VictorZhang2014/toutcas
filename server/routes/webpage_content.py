@@ -1,4 +1,5 @@
 import os
+from warnings import deprecated
 import trafilatura 
 import requests
 import json 
@@ -9,14 +10,8 @@ from constants import DEFAULT_INFERENCE_MODEL, LLM_ENDPOINT
 HF_TOKEN = os.getenv("HUGGING_FACE_API_TOKEN") 
 
 webpage_content_bp = Blueprint("webpage_content", __name__)
-
-def extract_content(url: str, htmlcode: str) -> str:
-    try: 
-        content = trafilatura.extract(htmlcode)
-        return content if content else ""
-    except Exception as e:
-        return f"[Error extracting {url}: {e}]"
     
+@deprecated
 def check_if_pdf_only(htmlcode: str) -> str:
     headers = {
         "Authorization": f"Bearer {HF_TOKEN}",
@@ -34,12 +29,19 @@ def check_if_pdf_only(htmlcode: str) -> str:
     data = resp.json()
     return data["choices"][0]["message"]["content"]
 
+def extract_content(url: str, htmlcode: str) -> str:
+    try: 
+        content = trafilatura.extract(htmlcode)
+        return content if content else ""
+    except Exception as e:
+        return f"[Error extracting {url}: {e}]"
+    
 @webpage_content_bp.route("/webpage_content", methods=["POST"])
 def run():
     body = request.get_json()  
     url = body.get("url")  
     htmlcode = body.get("htmlcode").strip() 
-    # respConfirm = check_if_pdf_only(htmlcode)  # Consumes too many tokens
+    # respConfirm = check_if_pdf_only(htmlcode)  # Consumes too many tokens due to the raw html code will be sent to the LLM
     isPDFViewer = '<embed name="plugin" src="'+url+'" type="application/pdf">' in htmlcode
     if (isPDFViewer):
         return jsonify({

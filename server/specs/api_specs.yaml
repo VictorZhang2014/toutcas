@@ -1,0 +1,96 @@
+swagger: '2.0'
+info:
+  title: ToutCas API
+  version: '1.0'
+  description: This API is for text analysis with optional web content using an LLM
+basePath: /
+
+paths:
+  /text_analyser:
+    post:
+      tags:
+        - Text Analysis
+      summary: Analyze text with optional web content using an LLM
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - text
+            properties:
+              text:
+                type: string
+                description: User text to analyze
+                example: "What is the capital of France?"
+              model:
+                type: string
+                description: LLM model name
+                example: "openai/gpt-oss-120b:novita"
+              messages:
+                type: array
+                description: Chat message history
+                items:
+                  type: object
+                example: [{"role": "system", "content": "You are helpful assistant"}]
+              web_content:
+                type: string
+                description: Optional webpage content for context
+      responses:
+        200:
+          description: Successfully analyzed text
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              llm_response:
+                type: string
+        400:
+          description: Missing required field 'text'
+        500:
+          description: LLM API error
+  /webpage_content:
+    post:
+      tags:
+        - Webpage Content
+      summary: Analyze a web page, extract the main content in text format
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - url
+            properties:
+              url:
+                type: string
+                description: URL of the webpage to analyze
+                example: "https://example.com"
+              htmlcode:
+                type: string
+                description: HTML code of the webpage to analyze
+                example: "<html><body><h1> Test Example</h1></body></html>"
+      responses:
+        200:
+          description: Successfully extracted webpage content
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              content:
+                type: string
+              is_pdf:
+                type: boolean
+        400:
+          description: Missing required field 'htmlcode'
+        500:
+          description: LLM API error
+
+
+
+
+

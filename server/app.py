@@ -1,7 +1,9 @@
 from flask import Flask
 from routes import text_analyser, webpage_content, pdf_analyser, burn_after_use, vector_db_chat
-import logging
+import os, logging
 from dotenv import load_dotenv
+from flasgger import Swagger
+import yaml
 
 load_dotenv() 
 
@@ -12,7 +14,14 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 
-app = Flask(__name__) 
+app = Flask(__name__)
+
+def load_swagger():
+    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(ROOT_DIR, 'specs', 'api_specs.yaml'), 'r') as f:
+        specs = yaml.safe_load(f)
+    flasgger = Swagger(app, template=specs)
+load_swagger()
 
 @app.route("/")
 def home():
