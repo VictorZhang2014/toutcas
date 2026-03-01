@@ -38,6 +38,7 @@ retrieved_contexts = []
 
 for i, row in test_df.iterrows():
     query = row['question']
+    print(f"\nEvaluating Question {i+1}/{len(test_df)}: {query}")
 
     payload = {
         "embedding_filename": "Guide_for_applicants_MSCA_Postdoctoral.pdf.embeddings.json",

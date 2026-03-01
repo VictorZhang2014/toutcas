@@ -44,7 +44,7 @@ generator = TestsetGenerator(
 # Distributions are now handled by 'query_distribution' internally or passed as synthesizers
 dataset = generator.generate_with_langchain_docs(
     documents=langchain_docs,
-    testset_size=50
+    testset_size=10
 )
 
 # 6. Result
