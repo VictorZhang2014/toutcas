@@ -1,5 +1,4 @@
 import os
-from warnings import deprecated
 import trafilatura 
 import requests
 import json 
@@ -11,7 +10,8 @@ HF_TOKEN = os.getenv("HUGGING_FACE_API_TOKEN")
 
 webpage_content_bp = Blueprint("webpage_content", __name__)
     
-@deprecated
+# This function wasn't deleted because it may be for future information
+# This function is deprecated
 def check_if_pdf_only(htmlcode: str) -> str:
     headers = {
         "Authorization": f"Bearer {HF_TOKEN}",

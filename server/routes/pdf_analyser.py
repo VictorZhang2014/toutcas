@@ -163,3 +163,32 @@ Now analyze and respond to the user request:
 
 
 
+@pdf_analyzer_bp.route("/pdf_analyzer/getchunks", methods=["POST"])
+def run_with_chunks():  
+    body = request.get_json() 
+    model_name = body.get("model", DEFAULT_INFERENCE_MODEL) 
+    message_list = body.get("messages", [ {"role": "system", "content": DEFAULT_PROMPT} ])
+    user_query = body.get("text", "").strip()
+    embedding_filename = body.get("embedding_filename", "")
+ 
+    embedding_path = os.path.join(current_app.root_path, "pdf", embedding_filename) 
+    embedding_chunks = load_embeddings(embedding_path)
+ 
+    docs = search(user_query, embedding_chunks)
+    context = f"The user uploaded content is like `{docs}`\n\n"
+    prompt = f"""
+Context:
+{context}
+
+The Question by the user's request:
+{user_query}
+
+Now analyze and respond to the user request:
+""" 
+    response = call_llm(prompt, model_name, message_list)  
+    return jsonify({
+        "success": True, 
+        "query_query": user_query,
+        "context": docs,
+        "llm_response": response
+    })

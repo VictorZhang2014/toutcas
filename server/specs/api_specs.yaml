@@ -63,7 +63,7 @@ paths:
           schema:
             type: object
             required:
-              - url
+              - htmlcode
             properties:
               url:
                 type: string
@@ -89,8 +89,105 @@ paths:
           description: Missing required field 'htmlcode'
         500:
           description: LLM API error
-
-
-
-
-
+  /pdf_analyzer:
+    post:
+      tags:
+        - PDF Analyser
+      summary: PDF file content analysis, chunk, embedding, and vector database storage
+      consumes:
+        - multipart/form-data
+      parameters: 
+        - name: conversation_id
+          in: formData
+          required: false
+          type: string
+          description: UUID for the conversation
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        - name: text
+          in: formData
+          required: false
+          type: string
+          description: User query
+          example: "What is the main topic of this PDF?"
+        - name: model
+          in: formData
+          required: false
+          type: string
+          description: LLM model name
+          example: "openai/gpt-oss-120b:novita"
+        - name: messages
+          in: formData
+          required: false
+          type: string
+          description: JSON array of chat messages (stringified)
+          example: '[{"role":"system","content":"You are helpful assistant"}]'
+        - name: file
+          in: formData
+          required: true
+          type: file
+          description: PDF file to upload
+      responses:
+        200:
+          description: Successfully extracted webpage content
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              content:
+                type: string
+              is_pdf:
+                type: boolean
+        400:
+          description: Missing required field 'htmlcode'
+        500:
+          description: LLM API error
+  /pdf_analyzer/getchunks:
+    post:
+      tags:
+        - PDF Analyser with returned chunks
+      summary: Analyze a web page, extract the main content in text format
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - embedding_filename
+            properties:
+              model:
+                type: string
+                description: LLM model name
+                example: "openai/gpt-oss-120b:novita"
+              messages:
+                type: array
+                description: JSON array of chat messages (stringified)
+                example: [{"role":"system","content":"You are helpful assistant"}]
+              text:
+                type: string
+                description: User query text
+                example: "What is the main topic of this PDF?"
+              embedding_filename:
+                type: string 
+                example: "my_document.embeddings.json"
+      responses:
+        200:
+          description: Successfully the relevant chunks from the user's request
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              query_query:
+                type: string
+              context:
+                type: array
+                items:
+                  type: string
+              llm_response:
+                type: string
+        400:
+          description: Missing required field 'htmlcode'
+        500:
+          description: LLM API error 
