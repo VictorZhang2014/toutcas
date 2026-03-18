@@ -3,8 +3,6 @@
 </p>
 
 # ToutCas
-Nothing stored. Nothing shared. A Burn-After-Use AI assistant.
-
 It is an AI assistant designed with a Burn-After-Use interaction model and, zero remote data persistence, and a secure multi-tenant architecture, ensuring that user data is never stored or retained on remote servers.
 
 [![built-for-macos](https://img.shields.io/badge/Built%20for-macOS-BF0BD9.svg)](https://developer.apple.com/)
@@ -23,6 +21,8 @@ It is an AI assistant designed with a Burn-After-Use interaction model and, zero
 - ✅ Native web page analysis and PDF understanding powered by Retrieval-Augmented Generation (RAG) and embedding-based retrieval
 - ✅ Research-inspired design, informed by this dissertation [arXiv:2601.06627](https://arxiv.org/abs/2601.06627)
 
+# SMTA Architecture & Burn-After-Use Mechanism
+<img src="https://github.com/VictorZhang2014/toutcas/blob/main/screenshots/smta-architecture.png" width=400 /> <img src="https://github.com/VictorZhang2014/toutcas/blob/main/screenshots/burn-after-use-mechanism.png" width=400 />
 
 # Screenshots
 ![ToutCas Application Screenshot1](https://github.com/VictorZhang2014/toutcas/blob/main/screenshots/Screenshot1.png)
