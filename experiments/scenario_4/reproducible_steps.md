@@ -1,5 +1,5 @@
 ### Title
-Remote Cache Persistence Under Network Failure
+REMOTE RESIDUAL PERSISTENCE UNDER NETWORK INTERRUPTION
 
 #### Description
 - Client-side file location: `./toutcas/lib/src/views/home_view.dart` (line 433)

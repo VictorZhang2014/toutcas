@@ -1,5 +1,5 @@
 ### Title
-Local Cache Deletion Failure Under Software Crash
+LOCAL RESIDUAL PERSISTENCE UNDER UNEXPECTED APPLICATION TERMINATION
 
 #### Description
 - File location: `./toutcas/lib/src/views/home_view.dart`

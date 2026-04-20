@@ -1,5 +1,5 @@
 ### Title
-OS-Level Exposure via Screen Snapping or Window Probing
+ENDPOINT VISUAL EXPOSURE OUTSIDE THE BAU TRUST BOUNDARY 
 
 #### Description
 The OS may capture on-screen pixels through screenshot or screencast shortcuts, external webcam/monitor capturing, or window manager preview thumbnails. 

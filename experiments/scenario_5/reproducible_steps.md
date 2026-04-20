@@ -1,5 +1,5 @@
 ### Title
-Race-Condition Attack on BAU Burn Timer
+BURN TIMER PERSISTENCE UNDER SCHEDULER INTERRUPTION
 
 #### Description
 Such conditions include the macOS App Nap feature, Windows Suspend Process, system‑wide Low‑Power/Battery Saver Mode, extreme CPU overloading, or blocking I/O operations (e.g., processing a large file on the main thread). These situations temporarily stall the UI thread or main isolate, preventing scheduled timer events from firing at their intended time.

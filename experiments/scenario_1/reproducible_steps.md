@@ -1,8 +1,8 @@
 ### Title
-Compromised Vector-Store Credential Attack
+VECTOR STORE CREDENTIAL EXPOSURE
 
 #### Description
-The attack simulates a realistic scenario where database administrator credentials are leaked or the password is weak. 
+This simulates a realistic scenario where database administrator credentials are leaked or the password is weak. 
 
 #### Steps
 - 1. Create a vector database in the popular platform - supabase
