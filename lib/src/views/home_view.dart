@@ -410,12 +410,14 @@ class _HomeViewState extends State<HomeView> {
   }
 
   void burnChatConversation(int i) async {
+    final start = DateTime.now();
+
     setState(() {
       webTabs[i].isHiddenAskToutCas = true;
       webTabs[i].chatInstance = null;
     });  
     
-    // APPENDIX B: Test Case 1 - Local Cache Deletion Failure Under Software Crash
+    // APPENDIX B: Scenario 1 - Local Residual Persistence Under Unexpected Application Termination
     List<String> localPaths = webTabs[i].chatPDFLocalPaths;
     for (int j = 0; j < localPaths.length; j++) {
       try {
@@ -429,7 +431,14 @@ class _HomeViewState extends State<HomeView> {
     }
     webTabs[i].chatPDFLocalPaths = [];
 
-    // APPENDIX B: Test Case 2 - Remote Cache Persistence Under Network Failure
+    final end = DateTime.now();
+    final latency = end.difference(start).inMilliseconds;  
+    print(
+      "BURN_AFTER_USE_LOCAL_CLEANUP | start=${start.toIso8601String()} | "
+      "end=${end.toIso8601String()} | latency=${latency} ms"
+    );
+
+    // APPENDIX B: Scenario 2 - Remote Residual Persistence Under Network Interruption
     LLMRequest(model: BasicConfig().appAIModel).burnConversation(webTabs[i].conversationId);
   }
 

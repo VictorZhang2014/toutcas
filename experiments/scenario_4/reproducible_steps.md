@@ -2,7 +2,7 @@
 REMOTE RESIDUAL PERSISTENCE UNDER NETWORK INTERRUPTION
 
 #### Description
-- Client-side file location: `./toutcas/lib/src/views/home_view.dart` (line 433)
+- Client-side file location: `./toutcas/lib/src/views/home_view.dart` (line 442)
 - Server-side file location: `./toutcas/server/routes/burn_after_use.py`
 
 #### Steps

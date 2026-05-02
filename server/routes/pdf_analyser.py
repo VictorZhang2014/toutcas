@@ -1,4 +1,6 @@
+from datetime import datetime
 import os  
+import time
 import requests
 from flask import Blueprint, current_app, json, request, jsonify
 from huggingface_hub import InferenceClient
@@ -127,6 +129,9 @@ def call_llm(prompt: str, model: str, messages: list[str]) -> str:
 
 @pdf_analyzer_bp.route("/pdf_analyzer", methods=["POST"])
 def run():  
+    start_time = datetime.now()
+    start = time.perf_counter()
+
     conversation_id = request.form.get("conversation_id")
     model_name = request.form.get("model", DEFAULT_INFERENCE_MODEL) 
     user_query = request.form.get("text").strip()
@@ -139,7 +144,7 @@ def run():
     # User uploaded pdf file
     embedding_chunks_useruploaded = load_embedding_chunks(pdf_dir, "file_name_user_uploaded", "file_user_uploaded") 
 
-    # Attack Test 2: Log-Pipeline Leakage Across Tenants
+    # APPENDIX A - Scenario B: Log-Pipeline Leakage Across Tenants
     current_app.logger.info("===========embedding_chunks_useruploaded==========>>>")
     current_app.logger.info(embedding_chunks_useruploaded)
 
@@ -159,6 +164,17 @@ The Question by the user's request:
 
 Now analyze and respond to the user request:
 """ 
+    
+    end = time.perf_counter()
+    end_time = datetime.now()
+    latency_ms = (end - start) * 1000 
+    current_app.logger.info(
+        f"TENANT_QUERY_SESSION | "
+        f"start={start_time.isoformat()} | "
+        f"end={end_time.isoformat()} | "
+        f"latency={latency_ms:.2f} ms"
+    )
+
     response = call_llm(prompt, model_name, message_list)  
     return jsonify({
         "success": True, 
